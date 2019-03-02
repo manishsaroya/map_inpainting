@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 '''
 This file contains the procedure for map generation 
 Author: Manish Saroya 
@@ -83,7 +84,7 @@ def connectGrid(pts, grid):
     for i in range(len(pts)):
         for j in range(i+1, len(pts)):
             path = getPath(np.zeros((len(grid), len(grid[0]))), pts[i], pts[j])
-            print("astarpath",path)
+            #print("astarpath",path)
             for k in path:
                 grid[k[0], k[1]] = 1
 
@@ -104,12 +105,16 @@ def sparseConnectGrid(pts, grid, near_entrance_point):
 def nearestNeighbor(center, pts): #, forbidden):
     distance = []
     for i in pts:
+        #if i != center: #and (i not in forbidden): 
         distance.append(manhattanDist(i, center))
+        #else:
+        #    distance.append(1000000)
     nearestPoints = []
+    #nearestPoints.append(pts[np.argmin(distance)])
     distance = np.array(distance)
-    print(distance)
+    #print(distance)
     indices = distance.argsort()[:2]
-    print(indices)
+    #print indices
     nearestPoints.append(pts[indices[0]])
     if random.uniform(0,1) > 0.8 and len(indices)>=2:
         nearestPoints.append(pts[indices[1]])
@@ -124,7 +129,7 @@ def connectEntrance(grid, entrance, pts):
     for i in pts:
         distance.append(manhattanDist(i, entrance))
     nearestPoint = pts[np.argmin(distance)]
-    print(nearestPoint)
+    #print(nearestPoint)
 
     if entrance != nearestPoint:
         path = getPath(np.zeros((len(grid), len(grid[0]))), entrance, nearestPoint)
@@ -142,11 +147,14 @@ dirs_motion = [
 
 def getTiles(gridDimension, numPOI):
 
+    #board = np.zeros((gridDimension[0],gridDimension[1]))
     path_viz = np.zeros((gridDimension[0], gridDimension[1]))
 
     points = createPOI(numPOI, gridDimension)
 
-    print("points", points)
+    #print("points", points)
+    #connectGrid(points, path_viz)
+    #sparseConnectGrid(points, path_viz)
     entrance_point = [0, int(gridDimension[1]/2)]
 
     # Connecting Entrance to the nearest point of interest
@@ -169,7 +177,7 @@ def getTiles(gridDimension, numPOI):
 
             # Connect with the entrance
             if entrance_point[0] == x and entrance_point[1] == y:
-                print("equating entrance", entrance_point, x, y)
+                #print("equating entrance", entrance_point, x, y)
                 dir_vector[0] = 1
 
             # check whether the current point needs a tile.
@@ -208,7 +216,7 @@ def getTiles(gridDimension, numPOI):
                     tiles[x,y] = 24  # 10 is the code for Plus connection.
 
                 elif sum(dir_vector) == 1:
-                    print("sum", sum(dir_vector))
+                    #print("sum", sum(dir_vector))
                     if dir_vector[0] == 1:
                         tiles[x,y] = 31  # 10 is the code for Plus connection.
                     elif dir_vector[1] == 1:
@@ -254,16 +262,68 @@ def getTiles(gridDimension, numPOI):
                         and dir_vector[3] == 1:
                     tiles[x,y] = 16  # 16 is the code for turn with yaw pi.
 
+    #print(path_viz)
+    #print(tiles)
+    #plt.imshow(path_viz)
+    #plt.ylabel('x')
+    #plt.xlabel('y')
+    #plt.show()
+    
+    return tiles, path_viz
 
-    print(path_viz)
-    print(tiles)
-    plt.imshow(path_viz)
-    plt.ylabel('x')
-    plt.xlabel('y')
-    plt.show()
-    return tiles
+#t = getTiles(gridDimension,numPOI)
+#print(t)
 
-gridDimension = [15, 15]
-numPOI = 12
-t = getTiles(gridDimension,numPOI)
-print(t)
+
+## Data generation. Ideally this should be in a different file
+import sys 
+import pickle
+data = {}
+data["training_data"] = []
+data["training_labels"] = []
+data["testing_data"] = []
+data["testing_labels"] = []
+
+gridDimension = [64, 64]
+numPOI = 35
+trainRatio = 0.9
+totalData = 1000
+
+for i in range(int(trainRatio * totalData)):
+    m, n = getTiles(gridDimension,numPOI)
+    data["training_data"].append(n)
+    #test = np.logical_or.reduce((m==31,m==32,m==33,m==34))
+    #data["training_labels"].append(test.astype(int))
+    print(
+    '\r[Generating Training Data {} of {}]'.format(
+        i,
+        int(trainRatio * totalData),
+    ),
+    end=''
+    )
+print('')
+
+for i in range(int((1 - trainRatio) * totalData +1)):
+    m, n = getTiles(gridDimension,numPOI)
+    data["testing_data"].append(n)
+    #test = np.logical_or.reduce((m==31,m==32,m==33,m==34))
+    #data["testing_labels"].append(test.astype(int))
+    #print("testing")
+    print(
+    '\r[Generating Testing Data {} of {}]'.format(
+        i,
+        int((1 - trainRatio) * totalData +1),
+    ),
+    end='',
+    )
+print('') 
+
+
+with open('synthetic_dataset.pickle', 'wb') as handle:
+    pickle.dump(data, handle)
+
+#with open('synthetic_dataset.pickle', 'rb') as handle:
+#    b = pickle.load(handle)
+
+
+

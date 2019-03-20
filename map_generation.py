@@ -278,52 +278,40 @@ def getTiles(gridDimension, numPOI):
 ## Data generation. Ideally this should be in a different file
 import sys 
 import pickle
-data = {}
-data["training_data"] = []
-data["training_labels"] = []
-data["testing_data"] = []
-data["testing_labels"] = []
 
 gridDimension = [64, 64]
 numPOI = 35
-trainRatio = 0.9
-totalData = 1000
+trainRatio = 0.8
+totalData = 31200
+validRatio = 0.1
+testRatio = 0.1
+def generate(ratio,totalData,tpe):
+    print("Generating",tpe,"data...")
+    dat = []
+    for i in range(int(ratio * totalData)):
+        m, n = getTiles(gridDimension,numPOI)
+        dat.append(np.float32(n))
+        #print("type",n.dtype)
+        #test = np.logical_or.reduce((m==31,m==32,m==33,m==34))
+        #data["training_labels"].append(test.astype(int))
+        print(
+        '\r[Generating Data {} of {}]'.format(
+            i,
+            int(ratio * totalData),
+        ),
+        end=''
+        )
+    print('')
+    return dat
 
-for i in range(int(trainRatio * totalData)):
-    m, n = getTiles(gridDimension,numPOI)
-    data["training_data"].append(n)
-    #test = np.logical_or.reduce((m==31,m==32,m==33,m==34))
-    #data["training_labels"].append(test.astype(int))
-    print(
-    '\r[Generating Training Data {} of {}]'.format(
-        i,
-        int(trainRatio * totalData),
-    ),
-    end=''
-    )
-print('')
+data = {}
+data["train"] = generate(trainRatio,totalData,"training")
+data["validation"] = generate(validRatio,totalData,"validation")
+data["test"] = generate(testRatio,totalData,"testing")
 
-for i in range(int((1 - trainRatio) * totalData +1)):
-    m, n = getTiles(gridDimension,numPOI)
-    data["testing_data"].append(n)
-    #test = np.logical_or.reduce((m==31,m==32,m==33,m==34))
-    #data["testing_labels"].append(test.astype(int))
-    #print("testing")
-    print(
-    '\r[Generating Testing Data {} of {}]'.format(
-        i,
-        int((1 - trainRatio) * totalData +1),
-    ),
-    end='',
-    )
-print('') 
-
-
-with open('synthetic_dataset.pickle', 'wb') as handle:
+with open('ground_truth_dataset_64.pickle', 'wb') as handle:
     pickle.dump(data, handle)
 
 #with open('synthetic_dataset.pickle', 'rb') as handle:
 #    b = pickle.load(handle)
-
-
 

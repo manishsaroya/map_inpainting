@@ -1,11 +1,11 @@
 import numpy as np
 import pickle
-def dataset(tp):
-	with open('ground_truth_dataset_64.pickle','rb') as tf:
+def dataset(tp, grid_size):
+	with open('ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
 		gt = pickle.load(tf)
-	with open('mask_dataset_64.pickle','rb') as rf:
+	with open('mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
 		masks = pickle.load(rf)
-	with open('image_dataset_64.pickle','rb') as f:
+	with open('image_dataset_{}.pickle'.format(grid_size),'rb') as f:
 		images = pickle.load(f)
 	d = []
 	if tp == 'train':

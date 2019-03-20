@@ -1,9 +1,14 @@
 import pickle
-with open('ground_truth_dataset_64.pickle','rb') as f:
+GRID_SIZE = 32
+with open('ground_truth_dataset_{}.pickle'.format(GRID_SIZE),'rb') as f:
 	data = pickle.load(f)
 
 #print(data,len(data),type(data))
-PATCH_SIZE =  20
+if GRID_SIZE == 64:
+    PATCH_SIZE = 20
+elif GRID_SIZE ==32:
+    PATCH_SIZE = 10
+
 train = data['train']
 
 test = data['test']
@@ -107,9 +112,9 @@ images['train'] , masks['train'] = get_image_and_mask(train,"training")
 images['validation'] , masks['validation'] = get_image_and_mask(valid,"validation")
 images['test'], masks['test'] = get_image_and_mask(test,"testing")
 
-with open('image_dataset_64.pickle', 'wb') as handle:
+with open('image_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
     pickle.dump(images, handle)
-with open('mask_dataset_64.pickle', 'wb') as handle:
+with open('mask_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
     pickle.dump(masks, handle)
 
 image,mask,gt = images['train'][0], masks['train'][0] , train[0]

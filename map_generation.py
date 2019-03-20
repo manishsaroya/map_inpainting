@@ -279,10 +279,11 @@ def getTiles(gridDimension, numPOI):
 import sys 
 import pickle
 
-gridDimension = [64, 64]
-numPOI = 35
+GRID_SIZE = 32
+gridDimension = [GRID_SIZE, GRID_SIZE]
+numPOI = 18
 trainRatio = 0.8
-totalData = 31200
+totalData = 50000
 validRatio = 0.1
 testRatio = 0.1
 def generate(ratio,totalData,tpe):
@@ -309,7 +310,7 @@ data["train"] = generate(trainRatio,totalData,"training")
 data["validation"] = generate(validRatio,totalData,"validation")
 data["test"] = generate(testRatio,totalData,"testing")
 
-with open('ground_truth_dataset_64.pickle', 'wb') as handle:
+with open('ground_truth_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
     pickle.dump(data, handle)
 
 #with open('synthetic_dataset.pickle', 'rb') as handle:

@@ -181,7 +181,7 @@ class PConvUNet(nn.Module):
         #                            input         dec_2            dec_1
         #                            h_enc_7       h_enc_8          dec_8
 
-        for i in range(self.layer_size-1, 0, -1):
+        for i in range(self.layer_size, 0, -1):
             enc_h_key = 'h_{:d}'.format(i-1) #modified by 1
             dec_l_key = 'dec_{:d}'.format(i)
 

@@ -25,7 +25,7 @@ mask_transform = transforms.Compose(
     [transforms.Resize(size=size), transforms.ToTensor()])
 
 #dataset_val = Places2(args.root, img_transform, mask_transform, 'val')
-dataset_val = torch.tensor(dataset('test'))
+dataset_val = torch.tensor(dataset('test',args.grid_size))
 model = PConvUNet().to(device)
 load_ckpt(args.snapshot, [('model', model)])
 #model.load_state_dict(torch.load('mapinpainting_10000.pth'))

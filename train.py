@@ -42,12 +42,12 @@ parser = argparse.ArgumentParser()
 # training options
 parser.add_argument('--root', type=str, default='/srv/datasets/Places2')
 parser.add_argument('--mask_root', type=str, default='./masks')
-parser.add_argument('--save_dir', type=str, default='./snapshots/size32')
-parser.add_argument('--log_dir', type=str, default='./logs/default')
-parser.add_argument('--log_dir_val', type=str, default='./logs/default_val')
+parser.add_argument('--save_dir', type=str, default='./snapshots/adaptivelongsize32')
+parser.add_argument('--log_dir', type=str, default='./logs/adaptivelongdefault')
+parser.add_argument('--log_dir_val', type=str, default='./logs/adaptivelongdefault_validation')
 parser.add_argument('--lr', type=float, default=2e-4)
 parser.add_argument('--lr_finetune', type=float, default=5e-5)
-parser.add_argument('--max_iter', type=int, default=400000)
+parser.add_argument('--max_iter', type=int, default=1000000)
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--n_threads', type=int, default=0)
 parser.add_argument('--save_model_interval', type=int, default=5000)
@@ -89,7 +89,7 @@ dataset_val = dataset('val',args.grid_size)
 #total_white = 0
 #for i in range(len(dataset_train)):
 #    total_white = total_white + (dataset_train[i][0].sum()) / 3.0
-#    
+#
 #total_white = total_white /(len(dataset_train) * 64 *64)
 
 iterator_train = iter(data.DataLoader(
@@ -132,7 +132,7 @@ for i in tqdm(range(start_iter, args.max_iter)):
 
     loss = 0.0
     for key, coef in opt.LAMBDA_DICT.items():
-        value = coef * loss_dict[key]   
+        value = coef * loss_dict[key]
         loss += value
         if (i + 1) % args.log_interval == 0:
             writer.add_scalar('loss_{:s}'.format(key), value.item(), i + 1)
@@ -140,17 +140,17 @@ for i in tqdm(range(start_iter, args.max_iter)):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    
+
     if (i + 1) % args.log_interval ==0:
         image, mask, gt = [x.to(device) for x in next(iterator_val)]
         output, _ = model(image, mask)
         loss_dict = criterion(image, mask, output, gt)
         loss = 0.0
         for key, coef in opt.LAMBDA_DICT.items():
-            value = coef * loss_dict[key]   
+            value = coef * loss_dict[key]
             loss += value
             writer_val.add_scalar('loss_{:s}'.format(key), value.item(), i + 1)
-        
+
     if (i + 1) % args.save_model_interval == 0 or (i + 1) == args.max_iter:
         save_ckpt('{:s}/ckpt/{:d}.pth'.format(args.save_dir, i + 1),
                   [('model', model)], [('optimizer', optimizer)], i + 1)
@@ -163,9 +163,9 @@ for i in tqdm(range(start_iter, args.max_iter)):
     #if (i+1)%500 == 0:
     #    print(i+1," iterations completed","loss is ",loss.item())
 dataset_test = torch.tensor(dataset('test',args.grid_size))
-torch.save(model.state_dict(), 'mapinpainting_10000.pth')
+torch.save(model.state_dict(), 'mapinpainting_adaptive_mask.pth')
 model.eval()
-evaluate(model, dataset_test,device,'result.jpg',True)
+evaluate(model, dataset_test,device,'result_adaptive.jpg',True)
 
 writer.close()
 writer_val.close()

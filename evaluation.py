@@ -5,10 +5,12 @@ from torchvision.utils import save_image
 from util.image import unnormalize
 
 import matplotlib.pyplot as plt
-
+import numpy
+import sys
+numpy.set_printoptions(threshold=sys.maxsize)
 def evaluate(model, dataset, device, filename,if_save=False):
     #print("Inside evaluate..." ," and filename is",filename)
-    image, mask, gt = zip(*[dataset[i] for i in range(8)])
+    image, mask, gt = zip(*[dataset[i] for i in range(4,8)])
     image = torch.stack(image)
     mask = torch.stack(mask)
     gt = torch.stack(gt)
@@ -26,42 +28,48 @@ def evaluate(model, dataset, device, filename,if_save=False):
             torch.cat((unnormalize(image), mask, unnormalize(output),
                        unnormalize(output_comp), unnormalize(gt)), dim=0))
     save_image(grid, filename)
-    
-    image = image[0].permute(1,2,0)
-    gt = gt[0].permute(1,2,0)
-    mask = mask[0].permute(1,2,0)
-    output = output[0].permute(1,2,0)
+
+    image = image[0][0]#.permute(1,2,0)
+    gt = gt[0][0]#.permute(1,2,0)
+    mask = mask[0][0]#.permute(1,2,0)
+    output = output[0][0]#.permute(1,2,0)
     #print("permuted shapes",image.shape,mask.shape,gt.shape,output.shape)
     if if_save== True:
         fig = plt.figure(figsize=(6,8))
 
         fig.add_subplot(2,2,1)
-        plt.imshow(gt)
-        plt.title("True image")
-        plt.ylabel('y')
-        plt.xlabel('x')
+        plt.imshow(gt.numpy())
+        plt.title("Ground Truth Map")
+        #plt.ylabel('y')
+        #plt.xlabel('x')
+
+
+        fig.add_subplot(2,2,4)
+        plt.imshow(numpy.stack([image.numpy(), image.numpy(), mask.numpy()],axis=-1))
+        plt.title("Mask")
+        #plt.ylabel('mask_y')
+        #plt.xlabel('mask_x')
 
 
         fig.add_subplot(2,2,2)
-        plt.imshow(mask)
-        plt.title("Mask is")
-        plt.ylabel('mask_y')
-        plt.xlabel('mask_x')
-    
-        
-        fig.add_subplot(2,2,3)
-        title = "Masked  Image for PATCH_SIZE = 10" 
-        plt.imshow(image)
+        title = "70% explored Map"
+        plt.imshow(image.numpy())
         plt.title(title)
-        plt.ylabel('masked_y')
-        plt.xlabel('masked_x')
+        #plt.ylabel('masked_y')
+        #plt.xlabel('masked_x')
         plt.savefig("figure_8.png")
 
-        fig.add_subplot(2,2,4)
-        plt.imshow(output)
-        plt.title("output image")
-        plt.ylabel('output_y')
-        plt.xlabel('output_x')
+        fig.add_subplot(2,2,3)
+        plt.imshow(output.numpy())
+        plt.title("Predicted Map")
+        #plt.ylabel('output_y')
+        #plt.xlabel('output_x')
+
+        #fig.add_subplot(2,3,5)
+        #plt.imshow(numpy.stack([output.numpy(), image.numpy(), mask.numpy()],axis=-1),cmap='hot')
+        #plt.title("output image")
+        #plt.ylabel('output_y')
+        #plt.xlabel('output_x')
 
         plt.show()
         plt.savefig("all_images.png")

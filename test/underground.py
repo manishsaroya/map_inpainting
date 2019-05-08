@@ -115,7 +115,7 @@ class Underground:
 	    return prediction
 
 	def _predict_artifact(self, image, data_set):
-		device = torch.device('cuda')
+		device = torch.device('cpu')
 		size = (self._grid_size, self._grid_size)
 		img_transform = transforms.Compose(
 		    [transforms.Resize(size=size), transforms.ToTensor(),
@@ -127,7 +127,7 @@ class Underground:
 		#dataset_val = torch.tensor(dataset('test',args.image_size))
 		dataset_val = data_set
 		model = PConvUNet(layer_size=3).to(device)
-		load_ckpt('../snapshots/adaptivelongsize32/ckpt/850000.pth', [('model', model)])
+		model.load_state_dict(torch.load('../mapinpainting_adaptive_mask.pth', map_location='cpu'))
 		#model.load_state_dict(torch.load('mapinpainting_10000.pth'))
 		model.eval()
 		network_output = self.run_network(model, torch.tensor(dataset_val), device, 'result.jpg',False)

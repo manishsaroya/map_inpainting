@@ -89,7 +89,7 @@ plt.ylabel('explored_y')
 plt.xlabel('explored_x')
 
 fig.add_subplot(2,3,3)
-for p in test_func:
+for p in test_func:			# Why doing this things, comment or remove it.
 	image[p[0],p[1]] = 0.5
 plt.imshow(image)
 plt.title("explored with forntiers")

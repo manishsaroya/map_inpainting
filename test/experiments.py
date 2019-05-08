@@ -8,13 +8,14 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+
 def shutdown():
     print('\nGoodbye')
 
 def get_prediction_and_ground_truth(grid_size):
-    with open('ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
+    with open('../synthetic_data/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
         gt = pickle.load(tf)
-    with open('mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
+    with open('../synthetic_data/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
         masks = pickle.load(rf)
 
     true_prediction = []
@@ -26,11 +27,11 @@ def get_prediction_and_ground_truth(grid_size):
     return true_prediction, ground_truth
 
 def test_dataset(grid_size):
-    with open('ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
+    with open('../synthetic_data/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
         gt = pickle.load(tf)
-    with open('mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
+    with open('../synthetic_data/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
         masks = pickle.load(rf)
-    with open('image_dataset_{}.pickle'.format(grid_size),'rb') as f:
+    with open('../synthetic_data/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
         images = pickle.load(f)
     d = []
     for i in range(len(gt['test'])):

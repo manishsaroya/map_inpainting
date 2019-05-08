@@ -10,7 +10,7 @@ import sys
 numpy.set_printoptions(threshold=sys.maxsize)
 def evaluate(model, dataset, device, filename,if_save=False):
     #print("Inside evaluate..." ," and filename is",filename)
-    image, mask, gt = zip(*[dataset[i] for i in range(4,8)])
+    image, mask, gt = zip(*[dataset[i] for i in range(0,1)])
     image = torch.stack(image)
     mask = torch.stack(mask)
     gt = torch.stack(gt)
@@ -37,21 +37,21 @@ def evaluate(model, dataset, device, filename,if_save=False):
     if if_save== True:
         fig = plt.figure(figsize=(6,8))
 
-        fig.add_subplot(2,2,1)
+        fig.add_subplot(2,3,1)
         plt.imshow(gt.numpy())
         plt.title("Ground Truth Map")
         #plt.ylabel('y')
         #plt.xlabel('x')
 
 
-        fig.add_subplot(2,2,4)
+        fig.add_subplot(2,3,4)
         plt.imshow(numpy.stack([image.numpy(), image.numpy(), mask.numpy()],axis=-1))
         plt.title("Mask")
         #plt.ylabel('mask_y')
         #plt.xlabel('mask_x')
 
 
-        fig.add_subplot(2,2,2)
+        fig.add_subplot(2,3,2)
         title = "70% explored Map"
         plt.imshow(image.numpy())
         plt.title(title)
@@ -59,17 +59,25 @@ def evaluate(model, dataset, device, filename,if_save=False):
         #plt.xlabel('masked_x')
         plt.savefig("figure_8.png")
 
-        fig.add_subplot(2,2,3)
+        fig.add_subplot(2,3,3)
         plt.imshow(output.numpy())
         plt.title("Predicted Map")
         #plt.ylabel('output_y')
         #plt.xlabel('output_x')
 
-        #fig.add_subplot(2,3,5)
+        fig.add_subplot(2,3,5)
+        plt.imshow(1.0/(1.0 + numpy.exp(-output.numpy())) > 0.55)
+        print(output.numpy().max())
+        print(output.numpy().min())
         #plt.imshow(numpy.stack([output.numpy(), image.numpy(), mask.numpy()],axis=-1),cmap='hot')
-        #plt.title("output image")
-        #plt.ylabel('output_y')
-        #plt.xlabel('output_x')
+        plt.title("output image")
+        plt.ylabel('output_y')
+        plt.xlabel('output_x')
+
+        fig.add_subplot(2,3,6)
+        a = 1.0/(1.0 + numpy.exp(-output.numpy()))
+        plt.imshow((a * abs(mask.numpy() - 1)) > 0.55)
+        plt.title("Predicted Map")
 
         plt.show()
         plt.savefig("all_images.png")

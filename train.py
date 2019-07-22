@@ -42,12 +42,12 @@ parser = argparse.ArgumentParser()
 # training options
 parser.add_argument('--root', type=str, default='/srv/datasets/Places2')
 parser.add_argument('--mask_root', type=str, default='./masks')
-parser.add_argument('--save_dir', type=str, default='./snapshots/adaptivelongsize32')
-parser.add_argument('--log_dir', type=str, default='./logs/adaptivelongdefault')
-parser.add_argument('--log_dir_val', type=str, default='./logs/adaptivelongdefault_validation')
+parser.add_argument('--save_dir', type=str, default='./snapshots/hyperparam1')
+parser.add_argument('--log_dir', type=str, default='./logs/hyperparam1')
+parser.add_argument('--log_dir_val', type=str, default='./logs/hyperparam_validation1')
 parser.add_argument('--lr', type=float, default=2e-4)
 parser.add_argument('--lr_finetune', type=float, default=5e-5)
-parser.add_argument('--max_iter', type=int, default=1000000)
+parser.add_argument('--max_iter', type=int, default=500000)
 parser.add_argument('--batch_size', type=int, default=64)
 parser.add_argument('--n_threads', type=int, default=0)
 parser.add_argument('--save_model_interval', type=int, default=5000)
@@ -103,7 +103,7 @@ iterator_val = iter(data.DataLoader(
     num_workers=args.n_threads))
 
 print(len(dataset_train))
-model = PConvUNet(layer_size=3).to(device)
+model = PConvUNet(layer_size=3, input_channels=1).to(device)
 
 if args.finetune:
     lr = args.lr_finetune
@@ -127,6 +127,9 @@ for i in tqdm(range(start_iter, args.max_iter)):
     model.train()
 
     image, mask, gt = [x.to(device) for x in next(iterator_train)]
+    image = image.unsqueeze(1)
+    mask = mask.unsqueeze(1)
+    gt = gt.unsqueeze(1)
     output, _ = model(image, mask)
     loss_dict = criterion(image, mask, output, gt)
 
@@ -143,6 +146,9 @@ for i in tqdm(range(start_iter, args.max_iter)):
 
     if (i + 1) % args.log_interval ==0:
         image, mask, gt = [x.to(device) for x in next(iterator_val)]
+        image = image.unsqueeze(1)
+        mask = mask.unsqueeze(1)
+        gt = gt.unsqueeze(1)
         output, _ = model(image, mask)
         loss_dict = criterion(image, mask, output, gt)
         loss = 0.0

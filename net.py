@@ -145,6 +145,7 @@ class PConvUNet(nn.Module):
         self.dec_2 = PCBActiv(128 + 64, 64, activ='leaky')
         self.dec_1 = PCBActiv(64 + input_channels, input_channels,
                               bn=False, activ=None, conv_bias=True)
+        #self.sfmax = nn.Softmax2d()
         #print("decoder shapes:",self.dec_1,self.dec_2.shape,self.dec_3,self.dec_4.shape)
 
     def forward(self, input, input_mask):
@@ -194,6 +195,7 @@ class PConvUNet(nn.Module):
             h_mask = torch.cat([h_mask, h_mask_dict[enc_h_key]], 1)
             h, h_mask = getattr(self, dec_l_key)(h, h_mask)
 
+        #h = self.sfmax(h)
         return h, h_mask
 
     def train(self, mode=True):

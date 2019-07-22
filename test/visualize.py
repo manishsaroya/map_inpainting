@@ -73,4 +73,4 @@ class Visualize:
 		self.ax.plot()
 		# self.ax.tick_params(axis='both', which='both', bottom=False, top=False, labelbottom=False, right=False, left=False, labelleft=False)
 		plt.draw()
-		plt.pause(.01)
+		plt.pause(.0001)

@@ -10,7 +10,6 @@ import numpy as np
 import a_star
 from math import sqrt
 
-
 class Frontier:
 
     def get_next_frontier(self, current, observed_map, frontiers, value_dist):
@@ -20,14 +19,17 @@ class Frontier:
 
         # Find coordinates of each frontier
         frontier_indices = np.array(np.nonzero(frontiers))
-        # print("Frontier Indices")
-        # print(frontier_indices)
+        #print("Frontier Indices")
+        #print(frontier_indices)
 
         # Creates a list of current values of the frontiers.
         # This gets updated each time because frontier values change
         for i in range(frontier_indices.shape[1]):
             # Find shortest path to the next frontier and the length of that path
-            path = np.array(a_star.getPath(observed_map, current, frontier_indices[:, i]))
+            try:
+                path = np.array(a_star.getPath(observed_map, current, frontier_indices[:, i]))
+            except KeyError:
+                print("Cannot find path to the goal frontier", frontier_indices[:, i])
             path = np.flip(path, 0)
             path_length = np.shape(path)[0]
 

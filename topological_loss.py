@@ -86,5 +86,5 @@ class TopLoss(nn.Module):
                 zero_loss = self.computeloss(dgminfo[0][0],dgminfo_g[0][0])
                 one_loss = self.computeloss(dgminfo[0][1],dgminfo_g[0][1])
                 loss_ = torch.cat((loss_, torch.unsqueeze(zero_loss + one_loss,0)))
-        pdb.set_trace()
+        #pdb.set_trace()
         return torch.mean(loss_) #zero_loss + one_loss #zero_loss #self.topfn(dgminfo) + self.topfn2(dgminfo)

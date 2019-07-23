@@ -128,7 +128,10 @@ for i in tqdm(range(start_iter, args.max_iter)):
     model.train()
 
     image, mask, gt = [x.to(device) for x in next(iterator_train)]
-    pdb.set_trace()
+    image = image.unsqueeze(1)
+    mask = mask.unsqueeze(1)
+    gt = gt.unsqueeze(1)
+    #pdb.set_trace()
     output, _ = model(image, mask)
     loss_dict = criterion(image, mask, output, gt)
 

@@ -14,6 +14,9 @@ def evaluate(model, dataset, device, filename,if_save=False):
     image = torch.stack(image)
     mask = torch.stack(mask)
     gt = torch.stack(gt)
+    image = image.unsqueeze(1)
+    mask = mask.unsqueeze(1)
+    gt = gt.unsqueeze(1)
 
     #print(len(image),len(mask),len(gt))
     #print(image.shape,mask.shape,gt.shape)
@@ -24,15 +27,15 @@ def evaluate(model, dataset, device, filename,if_save=False):
 
     output_comp = mask * image + (1 - mask) * output
     #print("output and output_comp shapes",output.shape,output_comp.shape)
-    grid = make_grid(
-            torch.cat((unnormalize(image), mask, unnormalize(output),
-                       unnormalize(output_comp), unnormalize(gt)), dim=0))
-    save_image(grid, filename)
+    #grid = make_grid(
+    #        torch.cat((unnormalize(image), mask, unnormalize(output),
+    #                   unnormalize(output_comp), unnormalize(gt)), dim=0))
+    #save_image(grid, filename)
 
-    image = image[0][0]#.permute(1,2,0)
-    gt = gt[0][0]#.permute(1,2,0)
-    mask = mask[0][0]#.permute(1,2,0)
-    output = output[0][0]#.permute(1,2,0)
+    image = image[0][0] #.permute(1,2,0)
+    gt = gt[0][0] #.permute(1,2,0)
+    mask = mask[0][0] #.permute(1,2,0)
+    output = output[0][0] #.permute(1,2,0)
     #print("permuted shapes",image.shape,mask.shape,gt.shape,output.shape)
     if if_save== True:
         fig = plt.figure(figsize=(6,8))

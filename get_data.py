@@ -13,14 +13,16 @@ def dataset(tp, grid_size):
 			image = images['train'][i]
 			mask = masks['train'][i]
 			ground_truth = gt['train'][i]
-			d.append([convert(image),convert(mask),convert(ground_truth)])
+			d.append([image, mask, ground_truth])
+			#d.append([convert(image),convert(mask),convert(ground_truth)])
 
 	elif tp == 'val':
 		for i in range(len(gt['validation'])):
 			image = images['validation'][i]
 			mask = masks['validation'][i]
 			ground_truth = gt['validation'][i]
-			d.append([convert(image),convert(mask),convert(ground_truth)])
+			d.append([image, mask, ground_truth])
+			#d.append([convert(image),convert(mask),convert(ground_truth)])
 
 
 	elif tp == 'test':
@@ -28,7 +30,8 @@ def dataset(tp, grid_size):
 			image = images['test'][i]
 			mask = masks['test'][i]
 			ground_truth = gt['test'][i]
-			d.append([convert(image),convert(mask),convert(ground_truth)])
+			d.append([image, mask, ground_truth])
+			#d.append([convert(image),convert(mask),convert(ground_truth)])
 
 	return d
 def convert(image):

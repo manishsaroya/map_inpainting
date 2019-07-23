@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-
+from topological_loss import PersistenceDgm, TopLoss
+import pdb
 
 def gram_matrix(feat):
     # https://github.com/pytorch/examples/blob/master/fast_neural_style/neural_style/utils.py
@@ -23,6 +24,7 @@ class InpaintingLoss(nn.Module):
         super().__init__()
         self.l1 = nn.L1Loss()
         self.extractor = extractor
+        self.tloss = TopLoss((32,32))
 
     def forward(self, input, mask, output, gt):
         loss_dict = {}
@@ -30,6 +32,8 @@ class InpaintingLoss(nn.Module):
 
         loss_dict['hole'] = self.l1((1 - mask) * output, (1 - mask) * gt)
         loss_dict['valid'] = self.l1(mask * output, mask * gt)
+        pdb.set_trace()
+        loss_dict['toploss'] = self.tloss(output, gt)
 
         if output.shape[1] == 3:
             feat_output_comp = self.extractor(output_comp)

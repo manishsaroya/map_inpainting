@@ -12,11 +12,13 @@ from util.io import get_state_dict_on_cpu
 parser = argparse.ArgumentParser()
 # training options
 parser.add_argument('--root', type=str, default='./data')
-parser.add_argument('--snapshot', type=str, default='mapinpainting_adaptive_mask.pth')
+#parser.add_argument('--snapshot', type=str, default='snapshots/adaptivelongsize32/ckpt/995000.pth')
+#parser.add_argument('--snapshot', type=str, default='snapshots/toploss32test/ckpt/500000.pth')
+parser.add_argument('--snapshot', type=str, default='/home/subt/Desktop/Important_top_trained_network/500000.pth')
 parser.add_argument('--image_size', type=int, default=32)
 args = parser.parse_args()
 
-device = torch.device('cpu')
+device = torch.device('cuda')
 
 size = (args.image_size, args.image_size)
 img_transform = transforms.Compose(
@@ -27,7 +29,8 @@ mask_transform = transforms.Compose(
 
 #dataset_val = Places2(args.root, img_transform, mask_transform, 'val')
 dataset_val = torch.tensor(dataset('test',args.image_size))
-model = PConvUNet(layer_size=3).to(device)
-model.load_state_dict(torch.load(args.snapshot, map_location='cpu'))
+model = PConvUNet(layer_size=3, input_channels=1).to(device)
+load_ckpt(args.snapshot, [('model', model)])
+#model.load_state_dict(torch.load(args.snapshot, map_location='cpu'))
 model.eval()
 evaluate(model, torch.tensor(dataset_val), device, 'result.jpg',True)

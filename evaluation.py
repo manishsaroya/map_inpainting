@@ -8,16 +8,20 @@ import matplotlib.pyplot as plt
 import numpy
 import sys
 numpy.set_printoptions(threshold=sys.maxsize)
+import pdb
+
 def evaluate(model, dataset, device, filename,if_save=False):
+
     #print("Inside evaluate..." ," and filename is",filename)
-    image, mask, gt = zip(*[dataset[i] for i in range(0,1)])
+    image, mask, gt = zip(*[dataset[i] for i in range(0,8)])
+    
     image = torch.stack(image)
     mask = torch.stack(mask)
     gt = torch.stack(gt)
     image = image.unsqueeze(1)
     mask = mask.unsqueeze(1)
     gt = gt.unsqueeze(1)
-
+    #pdb.set_trace()
     #print(len(image),len(mask),len(gt))
     #print(image.shape,mask.shape,gt.shape)
     #print(image[0].shape,mask[0].shape,gt[0].shape)

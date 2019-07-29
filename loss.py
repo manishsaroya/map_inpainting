@@ -20,11 +20,11 @@ def total_variation_loss(image):
 
 
 class InpaintingLoss(nn.Module):
-    def __init__(self, extractor):
+    def __init__(self, extractor, tloss):
         super().__init__()
         self.l1 = nn.L1Loss()
         self.extractor = extractor
-        self.tloss = TopLoss((32,32))
+        self.tloss = tloss
 
     def forward(self, input, mask, output, gt):
         loss_dict = {}
@@ -32,8 +32,8 @@ class InpaintingLoss(nn.Module):
 
         loss_dict['hole'] = self.l1((1 - mask) * output, (1 - mask) * gt)
         loss_dict['valid'] = self.l1(mask * output, mask * gt)
-        pdb.set_trace()
-        loss_dict['toploss'] = self.tloss(output, gt)
+        #pdb.set_trace()
+        loss_dict['toploss'] = self.tloss(output.cpu(), gt.cpu()).cuda()
 
         if output.shape[1] == 3:
             feat_output_comp = self.extractor(output_comp)

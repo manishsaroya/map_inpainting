@@ -16,6 +16,7 @@ from places2 import Places2
 from util.io import load_ckpt
 from util.io import save_ckpt
 from get_data import dataset
+from topological_loss import TopLoss
 import pdb
 class InfiniteSampler(data.sampler.Sampler):
     def __init__(self, num_samples):
@@ -43,17 +44,17 @@ parser = argparse.ArgumentParser()
 # training options
 parser.add_argument('--root', type=str, default='/srv/datasets/Places2')
 parser.add_argument('--mask_root', type=str, default='./masks')
-parser.add_argument('--save_dir', type=str, default='./snapshots/adaptivelongsize32')
-parser.add_argument('--log_dir', type=str, default='./logs/adaptivelongdefault')
-parser.add_argument('--log_dir_val', type=str, default='./logs/adaptivelongdefault_validation')
+parser.add_argument('--save_dir', type=str, default='./snapshots/toploss32fast')
+parser.add_argument('--log_dir', type=str, default='./logs/toploss32fast')
+parser.add_argument('--log_dir_val', type=str, default='./logs/toploss32_validationfast')
 parser.add_argument('--lr', type=float, default=2e-4)
 parser.add_argument('--lr_finetune', type=float, default=5e-5)
-parser.add_argument('--max_iter', type=int, default=1000000)
-parser.add_argument('--batch_size', type=int, default=32)
+parser.add_argument('--max_iter', type=int, default=500000)
+parser.add_argument('--batch_size', type=int, default=16)
 parser.add_argument('--n_threads', type=int, default=0)
-parser.add_argument('--save_model_interval', type=int, default=5000)
-parser.add_argument('--vis_interval', type=int, default=5000)
-parser.add_argument('--log_interval', type=int, default=5000)
+parser.add_argument('--save_model_interval', type=int, default=100)
+parser.add_argument('--vis_interval', type=int, default=100)
+parser.add_argument('--log_interval', type=int, default=100)
 parser.add_argument('--image_size', type=int, default=32)
 parser.add_argument('--resume', type=str)
 parser.add_argument('--finetune', action='store_true')
@@ -61,7 +62,7 @@ parser.add_argument('--grid_size', type=int, default=32)
 args = parser.parse_args()
 
 torch.backends.cudnn.benchmark = True
-device = torch.device('cpu')
+device = torch.device('cuda')
 
 if not os.path.exists(args.save_dir):
     os.makedirs('{:s}/images'.format(args.save_dir))
@@ -71,8 +72,8 @@ if not os.path.exists(args.log_dir):
     os.makedirs(args.log_dir)
 if not os.path.exists(args.log_dir):
     os.makedirs(args.log_dir)
-writer = SummaryWriter(logdir=args.log_dir)
-writer_val = SummaryWriter(logdir=args.log_dir_val)
+writer = SummaryWriter(log_dir=args.log_dir)
+writer_val = SummaryWriter(log_dir=args.log_dir_val)
 
 print("image size in ArgumentParser",args.image_size,"number of threads",args.n_threads)
 size = (args.image_size, args.image_size)
@@ -115,7 +116,7 @@ else:
 start_iter = 0
 optimizer = torch.optim.Adam(
     filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
-criterion = InpaintingLoss(VGG16FeatureExtractor()).to(device)
+criterion = InpaintingLoss(VGG16FeatureExtractor(), TopLoss((args.grid_size, args.grid_size))).to(device)
 
 if args.resume:
     start_iter = load_ckpt(
@@ -148,6 +149,9 @@ for i in tqdm(range(start_iter, args.max_iter)):
 
     if (i + 1) % args.log_interval ==0:
         image, mask, gt = [x.to(device) for x in next(iterator_val)]
+        image = image.unsqueeze(1)
+        mask = mask.unsqueeze(1)
+        gt = gt.unsqueeze(1)
         output, _ = model(image, mask)
         loss_dict = criterion(image, mask, output, gt)
         loss = 0.0

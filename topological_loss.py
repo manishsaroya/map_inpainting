@@ -45,8 +45,8 @@ class TopLoss(nn.Module):
 
     def filtration(self, info):
         end, start = info[:,0], info[:,1]
-        end_ = torch.where(torch.abs(end)!=np.inf, end, torch.zeros(end.shape))
-        start_ = torch.where(torch.abs(start)!=np.inf, start, torch.zeros(start.shape))
+        end_ = torch.where(torch.abs(end)!=np.inf, torch.ones(end.shape), torch.zeros(end.shape))
+        start_ = torch.where(torch.abs(start)!=np.inf, torch.ones(start.shape), torch.zeros(start.shape))
         # remove infinite values
         index = torch.nonzero(end_ * start_)
         out = torch.index_select(info, 0, torch.squeeze(index))
@@ -73,15 +73,18 @@ class TopLoss(nn.Module):
         final_loss = torch.norm(torch.reshape(reduced_dgminfo,(-1,)) - torch.reshape(ordered_ground_truth,(-1,)))
         return final_loss
 
-    def forward(self, beta, ground):
+    def forward(self, beta, ground, z, f):
         loss_ = torch.tensor([])
+        #pdb.set_trace()
         for i in range(3):
             for j in range(beta.shape[1]):
                 dgminfo = self.pdfn(beta[i][j])
-                dgminfo_g = self.pdfn_g(ground[i][j])
+                #dgminfo_g = persistence_g[i][j]
+                #pdb.set_trace()
+                #dgminfo_g = self.pdfn_g(ground[i][j])
                 ############ Code starts ##########################
-                zero_loss = self.computeloss(dgminfo[0][0],dgminfo_g[0][0])
-                one_loss = self.computeloss(dgminfo[0][1],dgminfo_g[0][1])
+                zero_loss = self.computeloss(dgminfo[0][0],z[i][j])
+                one_loss = self.computeloss(dgminfo[0][1],f[i][j])
                 loss_ = torch.cat((loss_, torch.unsqueeze(zero_loss + one_loss,0)))
         #pdb.set_trace()
         return torch.mean(loss_) #zero_loss + one_loss #zero_loss #self.topfn(dgminfo) + self.topfn2(dgminfo)

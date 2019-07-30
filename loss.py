@@ -26,14 +26,14 @@ class InpaintingLoss(nn.Module):
         self.extractor = extractor
         self.tloss = tloss
 
-    def forward(self, input, mask, output, gt):
+    def forward(self, input, mask, output, gt, z, f):
         loss_dict = {}
         output_comp = mask * input + (1 - mask) * output
 
         loss_dict['hole'] = self.l1((1 - mask) * output, (1 - mask) * gt)
         loss_dict['valid'] = self.l1(mask * output, mask * gt)
         #pdb.set_trace()
-        loss_dict['toploss'] = self.tloss(output.cpu(), gt.cpu()).cuda()
+        loss_dict['toploss'] = self.tloss(output.cpu(), gt.cpu(), z.cpu(),f.cpu()).cuda()
 
         if output.shape[1] == 3:
             feat_output_comp = self.extractor(output_comp)

@@ -1,4 +1,5 @@
 import numpy as np
+import pdb
 import pickle
 def dataset(tp, grid_size):
 	with open('synthetic_data/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
@@ -7,13 +8,20 @@ def dataset(tp, grid_size):
 		masks = pickle.load(rf)
 	with open('synthetic_data/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
 		images = pickle.load(f)
+	with open('synthetic_data/ground_truth_dataset_peristenceDgm_z_{}.pickle'.format(grid_size),'rb') as f:
+		persistence_z = pickle.load(f)
+	with open('synthetic_data/ground_truth_dataset_peristenceDgm_f_{}.pickle'.format(grid_size),'rb') as f:
+		persistence_f = pickle.load(f)
 	d = []
 	if tp == 'train':
 		for i  in range(len(gt['train'])):
 			image = images['train'][i]
 			mask = masks['train'][i]
 			ground_truth = gt['train'][i]
-			d.append([image, mask, ground_truth])
+			z = persistence_z['train'][i]
+			f = persistence_f['train'][i]
+			#pdb.set_trace()
+			d.append([image, mask, ground_truth, z, f])
 			#d.append([convert(image),convert(mask),convert(ground_truth)])
 
 	elif tp == 'val':
@@ -21,7 +29,9 @@ def dataset(tp, grid_size):
 			image = images['validation'][i]
 			mask = masks['validation'][i]
 			ground_truth = gt['validation'][i]
-			d.append([image, mask, ground_truth])
+			z = persistence_z['validation'][i]
+			f = persistence_f['validation'][i]
+			d.append([image, mask, ground_truth, z, f])
 			#d.append([convert(image),convert(mask),convert(ground_truth)])
 
 
@@ -30,7 +40,9 @@ def dataset(tp, grid_size):
 			image = images['test'][i]
 			mask = masks['test'][i]
 			ground_truth = gt['test'][i]
-			d.append([image, mask, ground_truth])
+			z = persistence_z['test'][i]
+			f = persistence_f['test'][i]
+			d.append([image, mask, ground_truth, z, f])
 			#d.append([convert(image),convert(mask),convert(ground_truth)])
 
 	return d

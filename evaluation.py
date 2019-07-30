@@ -13,14 +13,21 @@ import pdb
 def evaluate(model, dataset, device, filename,if_save=False):
 
     #print("Inside evaluate..." ," and filename is",filename)
-    image, mask, gt = zip(*[dataset[i] for i in range(0,8)])
     
-    image = torch.stack(image)
-    mask = torch.stack(mask)
-    gt = torch.stack(gt)
-    image = image.unsqueeze(1)
-    mask = mask.unsqueeze(1)
-    gt = gt.unsqueeze(1)
+    image, mask, gt, z, f = dataset[0]
+    #image, mask, gt, z, f = zip(*[dataset[i] for i in range(0,8)])
+    image  = torch.as_tensor(image)
+    mask = torch.as_tensor(mask)
+    gt = torch.as_tensor(gt)
+    #image = torch.stack(image)
+    #mask = torch.stack(mask)
+    #gt = torch.stack(gt)
+    image = image.unsqueeze(0).unsqueeze(0)
+    mask = mask.unsqueeze(0).unsqueeze(0)
+    gt = gt.unsqueeze(0).unsqueeze(0)
+    z = z.unsqueeze(1)
+    f = f.unsqueeze(1)
+
     #pdb.set_trace()
     #print(len(image),len(mask),len(gt))
     #print(image.shape,mask.shape,gt.shape)
@@ -42,7 +49,7 @@ def evaluate(model, dataset, device, filename,if_save=False):
     output = output[0][0] #.permute(1,2,0)
     #print("permuted shapes",image.shape,mask.shape,gt.shape,output.shape)
     if if_save== True:
-        fig = plt.figure(figsize=(6,8))
+        fig = plt.figure(figsize=(15,10))
 
         fig.add_subplot(2,3,1)
         plt.imshow(gt.numpy())
@@ -74,8 +81,8 @@ def evaluate(model, dataset, device, filename,if_save=False):
 
         fig.add_subplot(2,3,5)
         plt.imshow(1.0/(1.0 + numpy.exp(-output.numpy())) > 0.55)
-        print(output.numpy().max())
-        print(output.numpy().min())
+        #print(output.numpy().max())
+        #print(output.numpy().min())
         #plt.imshow(numpy.stack([output.numpy(), image.numpy(), mask.numpy()],axis=-1),cmap='hot')
         plt.title("output image")
         plt.ylabel('output_y')
@@ -86,5 +93,5 @@ def evaluate(model, dataset, device, filename,if_save=False):
         plt.imshow((a * abs(mask.numpy() - 1)) > 0.55)
         plt.title("Predicted Map")
 
-        plt.show()
-        plt.savefig("all_images.png")
+        #plt.show()
+        plt.savefig(filename)

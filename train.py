@@ -52,9 +52,9 @@ parser.add_argument('--lr_finetune', type=float, default=5e-5)
 parser.add_argument('--max_iter', type=int, default=500000)
 parser.add_argument('--batch_size', type=int, default=16)
 parser.add_argument('--n_threads', type=int, default=0)
-parser.add_argument('--save_model_interval', type=int, default=100)
-parser.add_argument('--vis_interval', type=int, default=100)
-parser.add_argument('--log_interval', type=int, default=100)
+parser.add_argument('--save_model_interval', type=int, default=5000)
+parser.add_argument('--vis_interval', type=int, default=5000)
+parser.add_argument('--log_interval', type=int, default=5000)
 parser.add_argument('--image_size', type=int, default=32)
 parser.add_argument('--resume', type=str)
 parser.add_argument('--finetune', action='store_true')
@@ -127,14 +127,18 @@ if args.resume:
 
 for i in tqdm(range(start_iter, args.max_iter)):
     model.train()
-
-    image, mask, gt = [x.to(device) for x in next(iterator_train)]
+    #pdb.set_trace()
+    image, mask, gt, z, f = [x.to(device) for x in next(iterator_train)]
     image = image.unsqueeze(1)
     mask = mask.unsqueeze(1)
     gt = gt.unsqueeze(1)
+    z = z.unsqueeze(1)
+    f = f.unsqueeze(1)
     #pdb.set_trace()
+    #print("iterations", i)
     output, _ = model(image, mask)
-    loss_dict = criterion(image, mask, output, gt)
+    #print("done output")
+    loss_dict = criterion(image, mask, output, gt, z, f)
 
     loss = 0.0
     for key, coef in opt.LAMBDA_DICT.items():
@@ -148,12 +152,17 @@ for i in tqdm(range(start_iter, args.max_iter)):
     optimizer.step()
 
     if (i + 1) % args.log_interval ==0:
-        image, mask, gt = [x.to(device) for x in next(iterator_val)]
+        image, mask, gt, z, f = [x.to(device) for x in next(iterator_val)]
         image = image.unsqueeze(1)
         mask = mask.unsqueeze(1)
         gt = gt.unsqueeze(1)
+        z = z.unsqueeze(1)
+        f = f.unsqueeze(1)
+        #pdb.set_trace()
+        #print("iterations val", i)
         output, _ = model(image, mask)
-        loss_dict = criterion(image, mask, output, gt)
+        #print("done output val")
+        loss_dict = criterion(image, mask, output, gt, z, f)
         loss = 0.0
         for key, coef in opt.LAMBDA_DICT.items():
             value = coef * loss_dict[key]
@@ -167,11 +176,11 @@ for i in tqdm(range(start_iter, args.max_iter)):
     if (i + 1) % args.vis_interval == 0:
         model.eval()
         #print("Going to evaluate")
-        evaluate(model, torch.tensor(dataset_val), device,
-                 '{:s}/images/test_{:d}.jpg'.format(args.save_dir, i + 1))
+        evaluate(model, dataset_val, device,
+                 '{:s}/images/test_{:d}.jpg'.format(args.save_dir, i + 1), if_save=True)
     #if (i+1)%500 == 0:
     #    print(i+1," iterations completed","loss is ",loss.item())
-dataset_test = torch.tensor(dataset('test',args.grid_size))
+dataset_test = dataset('test',args.grid_size)
 torch.save(model.state_dict(), 'mapinpainting_adaptive_mask.pth')
 model.eval()
 evaluate(model, dataset_test,device,'result_adaptive.jpg',True)

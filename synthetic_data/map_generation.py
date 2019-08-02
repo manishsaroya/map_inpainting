@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 GRID_SIZE = 32
 numPOI = 18
 trainRatio = 0.8
-totalData = 50000
+totalData = 500
 validRatio = 0.1
 testRatio = 0.1
 #############################################################
@@ -66,12 +66,12 @@ groundTruthData["train"], tunnelMapData["train"], maskData["train"]  = generate(
 groundTruthData["validation"], tunnelMapData["validation"], maskData["validation"] = generate(validRatio,totalData,"validation")
 groundTruthData["test"], tunnelMapData["test"], maskData["test"] = generate(testRatio,totalData,"testing")
 
-with open('ground_truth_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
+with open('test/ground_truth_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
 	pickle.dump(groundTruthData, handle)
 
-with open('image_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
+with open('test/image_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
     pickle.dump(tunnelMapData, handle)
-with open('mask_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
+with open('test/mask_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
     pickle.dump(maskData, handle)
 
 fig = plt.figure(figsize=(6,8))

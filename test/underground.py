@@ -18,6 +18,7 @@ sys.path.append('../')
 from net import PConvUNet
 import opt
 from util.io import load_ckpt
+import pdb
 
 class Underground:
 
@@ -43,13 +44,23 @@ class Underground:
 		# np.savetxt("artifact_fidelity.csv", self._artifact_fidelity_map, delimiter=',')
 
 	def run_network(self, model, dataset, device, filename,if_save=False):
-	    #print("Inside evaluate..." ," and filename is",filename)
-	    image, mask, gt = zip(*[dataset])
-	    #print(dataset[0])
-	    image = torch.stack(image)
 
-	    mask = torch.stack(mask)
-	    gt = torch.stack(gt)
+
+        #print("Inside evaluate..." ," and filename is",filename)
+	    image, mask, gt = zip(*[dataset])
+        #print(dataset[0])
+	    image  = torch.as_tensor(image)
+	    mask = torch.as_tensor(mask)
+	    gt = torch.as_tensor(gt)
+	    #pdb.set_trace()
+	    image = image.unsqueeze(0)
+	    mask = mask.unsqueeze(0)
+	    gt = gt.unsqueeze(0)
+
+	    #image = torch.stack(image)
+
+	    #mask = torch.stack(mask)
+	    #gt = torch.stack(gt)
 
 	    with torch.no_grad():
 	        output, _ = model(image.to(device), mask.to(device))
@@ -61,11 +72,12 @@ class Underground:
 	    gt = gt[0][0]
 	    mask = mask[0][0]
 	    output = output[0][0]
+	    #pdb.set_trace()
 	    a = 1.0/(1.0 + numpy.exp(-output.numpy()))
 	    prediction = (a * abs(mask.numpy() - 1))
-	    
+	    #plt.show(plt.imshow(prediction))
 	    if if_save== True:
-	        fig = plt.figure(figsize=(6,8))
+	        fig = plt.figure(figsize=(15,10))
 
 	        fig.add_subplot(2,3,1)
 	        plt.imshow(gt.numpy())
@@ -115,7 +127,7 @@ class Underground:
 	    return prediction
 
 	def _predict_artifact(self, image, data_set):
-		device = torch.device('cpu')
+		device = torch.device('cuda')
 		size = (self._grid_size, self._grid_size)
 		img_transform = transforms.Compose(
 		    [transforms.Resize(size=size), transforms.ToTensor(),
@@ -126,11 +138,12 @@ class Underground:
 		#dataset_val = Places2(args.root, img_transform, mask_transform, 'val')
 		#dataset_val = torch.tensor(dataset('test',args.image_size))
 		dataset_val = data_set
-		model = PConvUNet(layer_size=3).to(device)
-		model.load_state_dict(torch.load('../mapinpainting_adaptive_mask.pth', map_location='cpu'))
+		model = PConvUNet(layer_size=3, input_channels=1).to(device)
+		load_ckpt('../snapshots/toploss32test/ckpt/500000.pth', [('model', model)])
+		#model.load_state_dict(torch.load('../snapshots/toploss32test/ckpt/500000.pth', map_location='cuda'))
 		#model.load_state_dict(torch.load('mapinpainting_10000.pth'))
 		model.eval()
-		network_output = self.run_network(model, torch.tensor(dataset_val), device, 'result.jpg',False)
+		network_output = self.run_network(model, dataset_val, device, 'resulttoploss.jpg',False)
 
 		#network_output = network_output.reshape(self._grid_size, self._grid_size).detach().numpy()
 		self._predicted_artifact_locations = []

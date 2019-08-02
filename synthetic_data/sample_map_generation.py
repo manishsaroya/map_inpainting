@@ -14,11 +14,17 @@ import numpy as np
 from x_map_gen import Exploration
 from mask_generation import Mask
 import matplotlib.pyplot as plt
+import os
+import datetime
+import numpy
+import pdb
+
 ######## Parameters for generating the database #############
-GRID_SIZE = 32
-numPOI = 18
+GRID_SIZE = 24
+numPOI = 36
 trainRatio = 0.8
-totalData = 5
+totalData = 30
+file_path = "./sample/"+ datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")+'/'
 #############################################################
 
 ######### Exploration Parameters #############
@@ -29,6 +35,20 @@ explore = Exploration(GRID_SIZE, numPOI, filterRatio)
 mask = Mask()
 #gridDimension = [GRID_SIZE, GRID_SIZE]
 test_func = None
+
+def sanityCheckMasknExplored(ground, image, mask):
+	# check that the explored image is equivalent to ground when mask is greater than one.
+	# if failure occures check implementation of % explored maps
+	count = 0 
+	for i in range(len(ground)):
+		#pdb.set_trace()
+		if not (image[i] == ground[i] * mask[i]).all():
+			print("Sanity test failed at index", i)
+			count = count + 1
+	print(".....done testing.....")
+	print("number of failures", count)
+
+
 def generate(ratio,totalData,tpe):
 	print("Generating",tpe,"data...")
 	groundTruthData = []
@@ -61,35 +81,42 @@ tunnelMapData = {}
 maskData = {}
 
 groundTruthData["sample"], tunnelMapData["sample"], maskData["sample"]  = generate(trainRatio,totalData,"sample")
+if not os.path.exists(file_path):
+    os.makedirs('{:s}'.format(file_path))
 
+sanityCheckMasknExplored(groundTruthData["sample"], tunnelMapData["sample"], maskData["sample"])
 
-fig = plt.figure(figsize=(10,10))
-image, masking,gt = tunnelMapData['sample'][0], maskData['sample'][0] , groundTruthData['sample'][0]
-fig.add_subplot(2,2,1)
-plt.imshow(gt)
-plt.title("True image")
-plt.ylabel('y')
-plt.xlabel('x')
+for i in range(len(groundTruthData['sample'])):
 
-fig.add_subplot(2,2,2)
-plt.imshow(image)
-plt.title("explored")
-plt.ylabel('explored_y')
-plt.xlabel('explored_x')
+	fig = plt.figure(figsize=(10,10))
+	image, masking,gt = tunnelMapData['sample'][i], maskData['sample'][i] , groundTruthData['sample'][i]
+	fig.add_subplot(2,2,1)
+	#pdb.set_trace()
+	plt.imshow(numpy.stack([gt,gt,gt],axis=-1))
+	plt.title("True image")
+	plt.ylabel('y')
+	plt.xlabel('x')
 
-fig.add_subplot(2,2,3)
-for p in test_func:			# Why doing this things, comment or remove it.
-	image[p[0],p[1]] = 0.5
-plt.imshow(image)
-plt.title("explored with forntiers")
-plt.ylabel('explored_y')
-plt.xlabel('explored_x')
+	fig.add_subplot(2,2,2)
+	title = "70% explored Map"
+	plt.imshow(numpy.stack([image, image, image],axis=-1))
+	plt.title(title)
+	plt.ylabel('y')
+	plt.xlabel('x')
 
-fig.add_subplot(2,2,4)
-plt.imshow(masking)
-title = "Masked for PATCH_SIZE = " + str(0)
-plt.title(title)
-plt.ylabel('masked_y')
-plt.xlabel('masked_x')
-plt.show()
-plt.savefig("figure_8.png")
+	fig.add_subplot(2,2,3)
+	plt.imshow(numpy.stack([image, image, masking],axis=-1))
+	title = "Mask"
+	plt.title(title)
+	plt.ylabel('y')
+	plt.xlabel('x')
+
+	fig.add_subplot(2,2,4)
+	#for p in test_func:			# Why doing this things, comment or remove it.
+	#	image[p[0],p[1]] = 0.5
+	plt.imshow(abs(groundTruthData["sample"][i] * maskData["sample"][i] - tunnelMapData["sample"][i]))
+	plt.title("explored with forntiers")
+	plt.ylabel('explored_y')
+	plt.xlabel('explored_x')
+	#plt.show()
+	plt.savefig(file_path+"sample_{}.png".format(i))

@@ -76,7 +76,7 @@ class TopLoss(nn.Module):
     def forward(self, beta, ground, z, f):
         loss_ = torch.tensor([])
         #pdb.set_trace()
-        for i in range(3):
+        for i in range(2):
             for j in range(beta.shape[1]):
                 dgminfo = self.pdfn(beta[i][j])
                 #dgminfo_g = persistence_g[i][j]

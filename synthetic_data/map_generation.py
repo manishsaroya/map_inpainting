@@ -15,8 +15,8 @@ from x_map_gen import Exploration
 from mask_generation import Mask
 import matplotlib.pyplot as plt
 ######## Parameters for generating the database #############
-GRID_SIZE = 32
-numPOI = 18
+GRID_SIZE = 24
+numPOI = 36
 trainRatio = 0.8
 totalData = 50000
 validRatio = 0.1
@@ -31,6 +31,20 @@ explore = Exploration(GRID_SIZE, numPOI, filterRatio)
 mask = Mask()
 #gridDimension = [GRID_SIZE, GRID_SIZE]
 test_func = None
+
+def sanityCheckMasknExplored(ground, image, mask):
+	# check that the explored image is equivalent to ground when mask is greater than one.
+	# if failure occures check implementation of % explored maps
+	count = 0 
+	for i in range(len(ground)):
+		#pdb.set_trace()
+		if not (image[i] == ground[i] * mask[i]).all():
+			print("Sanity test failed at index", i)
+			count = count + 1
+	print(".....done testing.....")
+	print("number of failures", count)
+	return count
+
 def generate(ratio,totalData,tpe):
 	print("Generating",tpe,"data...")
 	groundTruthData = []
@@ -66,41 +80,50 @@ groundTruthData["train"], tunnelMapData["train"], maskData["train"]  = generate(
 groundTruthData["validation"], tunnelMapData["validation"], maskData["validation"] = generate(validRatio,totalData,"validation")
 groundTruthData["test"], tunnelMapData["test"], maskData["test"] = generate(testRatio,totalData,"testing")
 
-with open('ground_truth_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
-	pickle.dump(groundTruthData, handle)
+a = sanityCheckMasknExplored(groundTruthData["train"], tunnelMapData["train"], maskData["train"])
+b = sanityCheckMasknExplored(groundTruthData["validation"], tunnelMapData["validation"], maskData["validation"])
+c = sanityCheckMasknExplored(groundTruthData["test"], tunnelMapData["test"], maskData["test"])
 
-with open('image_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
-    pickle.dump(tunnelMapData, handle)
-with open('mask_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
-    pickle.dump(maskData, handle)
+if a+b+c ==0:
+	with open('ground_truth_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
+		pickle.dump(groundTruthData, handle)
 
-fig = plt.figure(figsize=(6,8))
-image,masking ,gt = tunnelMapData['train'][0], maskData['train'][0] , groundTruthData['train'][0]
-fig.add_subplot(2,3,1)
-plt.imshow(gt)
+	with open('image_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
+	    pickle.dump(tunnelMapData, handle)
+	with open('mask_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
+	    pickle.dump(maskData, handle)
+else:
+	print("SANITY CHECK FAILED- NOT SAVING ANY DATA")
+
+fig = plt.figure(figsize=(10,10))
+image, masking,gt = tunnelMapData['train'][0], maskData['train'][0] , groundTruthData['train'][0]
+fig.add_subplot(2,2,1)
+#pdb.set_trace()
+plt.imshow(np.stack([gt,gt,gt],axis=-1))
 plt.title("True image")
 plt.ylabel('y')
 plt.xlabel('x')
 
-fig.add_subplot(2,3,2)
-plt.imshow(image)
-plt.title("explored")
-plt.ylabel('explored_y')
-plt.xlabel('explored_x')
+fig.add_subplot(2,2,2)
+title = "70% explored Map"
+plt.imshow(np.stack([image, image, image],axis=-1))
+plt.title(title)
+plt.ylabel('y')
+plt.xlabel('x')
 
-fig.add_subplot(2,3,3)
-for p in test_func:			# Why doing this things, comment or remove it.
-	image[p[0],p[1]] = 0.5
-plt.imshow(image)
+fig.add_subplot(2,2,3)
+plt.imshow(np.stack([image, image, masking],axis=-1))
+title = "Mask"
+plt.title(title)
+plt.ylabel('y')
+plt.xlabel('x')
+
+fig.add_subplot(2,2,4)
+#for p in test_func:			# Why doing this things, comment or remove it.
+#	image[p[0],p[1]] = 0.5
+plt.imshow(abs(groundTruthData["train"][0] * maskData["train"][0] - tunnelMapData["train"][0]))
 plt.title("explored with forntiers")
 plt.ylabel('explored_y')
 plt.xlabel('explored_x')
-
-fig.add_subplot(2,3,4)
-plt.imshow(masking)
-title = "Masked for PATCH_SIZE = " + str(0)
-plt.title(title)
-plt.ylabel('masked_y')
-plt.xlabel('masked_x')
 plt.show()
-plt.savefig("figure_8.png")
+#plt.savefig("sample_map.png")

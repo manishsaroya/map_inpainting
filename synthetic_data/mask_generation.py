@@ -26,6 +26,11 @@ class Mask:
 		    lambda x, y: (x+1, y),  # down
 		    lambda x, y: (x, y - 1),  # left
 		    lambda x, y: (x, y + 1),  # right
+		    # adding diagonal nbrs
+		    lambda x, y: (x+1, y+1), # down-right 
+		    lambda x, y: (x+1, y-1), # down-left
+		    lambda x, y: (x-1, y+1), # up-right
+		    lambda x, y: (x-1, y-1), # up-left
 		]
 		nbrsVector = []
 		for d in dirs_motion:
@@ -52,24 +57,3 @@ class Mask:
 			mask[p[0],p[1]] = 1
 
 		return mask
-
-########## Exploration Parameters #############
-#GRID_SIZE = 32
-#numPOI = 20
-#filterRatio = 0.7
-###############################################
-#
-#explore = Exploration(GRID_SIZE, numPOI, filterRatio)
-#explore.generate_map()
-#tunnelMap, frontierVector = explore.flood_fill_filter()
-#plt.imshow(tunnelMap)
-#plt.pause(0.0001)
-#for p in frontierVector:
-#	tunnelMap[p[0],p[1]] = 0.5
-#print(tunnelMap)
-#plt.imshow(tunnelMap)
-#plt.pause(0.0001)
-#maskobject = Mask()
-#maskobject.set_map(tunnelMap,frontierVector)
-#mask = maskobject.get_mask()
-#plt.imshow(mask)

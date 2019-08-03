@@ -14,11 +14,12 @@ import numpy as np
 from x_map_gen import Exploration
 from mask_generation import Mask
 import matplotlib.pyplot as plt
+import pdb
 ######## Parameters for generating the database #############
 GRID_SIZE = 24
 numPOI = 36
 trainRatio = 0.8
-totalData = 50000
+totalData = 50
 validRatio = 0.1
 testRatio = 0.1
 #############################################################
@@ -87,7 +88,10 @@ c = sanityCheckMasknExplored(groundTruthData["test"], tunnelMapData["test"], mas
 if a+b+c ==0:
 	with open('ground_truth_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
 		pickle.dump(groundTruthData, handle)
-
+	# Normalize Data
+	tunnelMapData["train"] = (tunnelMapData["train"]-np.mean(tunnelMapData["train"]))/ np.std(tunnelMapData["train"])
+	tunnelMapData["validation"] = (tunnelMapData["validation"]-np.mean(tunnelMapData["train"]))/ np.std(tunnelMapData["train"])
+	tunnelMapData["test"] = (tunnelMapData["test"]-np.mean(tunnelMapData["train"]))/ np.std(tunnelMapData["train"])
 	with open('image_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
 	    pickle.dump(tunnelMapData, handle)
 	with open('mask_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:

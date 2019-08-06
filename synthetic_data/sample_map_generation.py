@@ -54,6 +54,7 @@ def generate(ratio,totalData,tpe):
 	groundTruthData = []
 	tunnelMapData = []
 	maskData = []
+	adaptivemaskData = []
 	for i in range(int(ratio * totalData)):
 		groundTruth = explore.generate_map()
 		tunnelMap, frontierVector = explore.flood_fill_filter()
@@ -61,11 +62,11 @@ def generate(ratio,totalData,tpe):
 		test_func= frontierVector
 		mask.set_map(tunnelMap, frontierVector)
 		masking = mask.get_mask()
-
         #store all the elements
 		groundTruthData.append(np.float32(groundTruth))
 		tunnelMapData.append(np.float32(tunnelMap))
 		maskData.append(np.float32(masking))
+		adaptivemaskData.append(np.float32(mask.get_adaptive_mask(masking)))
 		print(
         '\r[Generating Data {} of {}]'.format(
             i,
@@ -74,13 +75,14 @@ def generate(ratio,totalData,tpe):
         end=''
         )
 	print('')
-	return groundTruthData, tunnelMapData, maskData
+	return groundTruthData, tunnelMapData, maskData, adaptivemaskData
 
 groundTruthData = {}
 tunnelMapData = {}
 maskData = {}
+adaptivemaskData = {}
 
-groundTruthData["sample"], tunnelMapData["sample"], maskData["sample"]  = generate(trainRatio,totalData,"sample")
+groundTruthData["sample"], tunnelMapData["sample"], maskData["sample"], adaptivemaskData["sample"]  = generate(trainRatio,totalData,"sample")
 if not os.path.exists(file_path):
     os.makedirs('{:s}'.format(file_path))
 
@@ -89,7 +91,7 @@ sanityCheckMasknExplored(groundTruthData["sample"], tunnelMapData["sample"], mas
 for i in range(len(groundTruthData['sample'])):
 
 	fig = plt.figure(figsize=(10,10))
-	image, masking,gt = tunnelMapData['sample'][i], maskData['sample'][i] , groundTruthData['sample'][i]
+	image, masking,gt, adaptivemask= tunnelMapData['sample'][i], maskData['sample'][i] , groundTruthData['sample'][i], adaptivemaskData['sample'][i]
 	fig.add_subplot(2,2,1)
 	#pdb.set_trace()
 	plt.imshow(numpy.stack([gt,gt,gt],axis=-1))
@@ -114,7 +116,8 @@ for i in range(len(groundTruthData['sample'])):
 	fig.add_subplot(2,2,4)
 	#for p in test_func:			# Why doing this things, comment or remove it.
 	#	image[p[0],p[1]] = 0.5
-	plt.imshow(abs(groundTruthData["sample"][i] * maskData["sample"][i] - tunnelMapData["sample"][i]))
+	#plt.imshow(abs(groundTruthData["sample"][i] * maskData["sample"][i] - tunnelMapData["sample"][i]))
+	plt.imshow(numpy.stack([adaptivemask, adaptivemask, adaptivemask],axis=-1))
 	plt.title("explored with forntiers")
 	plt.ylabel('explored_y')
 	plt.xlabel('explored_x')

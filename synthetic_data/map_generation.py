@@ -53,6 +53,7 @@ def generate(ratio,totalData,tpe):
 	maskData = []
 	for i in range(int(ratio * totalData)):
 		groundTruth = explore.generate_map()
+		# explored (tunnel)map will have 1.0 in place of frontierVectors 
 		tunnelMap, frontierVector = explore.flood_fill_filter()
 		global test_func
 		test_func= frontierVector

@@ -9,7 +9,7 @@ DARPA SubT Challenge
 import matplotlib.pyplot as plt
 import numpy as np
 import heapq
-import random
+#import random
 
 #GRID_SIZE = 16
 
@@ -119,7 +119,7 @@ def nearestNeighbor(center, pts): #, forbidden):
     indices = distance.argsort()[:2]
     #print indices
     nearestPoints.append(pts[indices[0]])
-    if random.uniform(0,1) > 0.1 and len(indices)>=2:
+    if np.random.uniform(0,1) > 0.1 and len(indices)>=2:
         nearestPoints.append(pts[indices[1]])
     return nearestPoints
 

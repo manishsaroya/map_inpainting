@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import pdb
 ######## Parameters for generating the database #############
 GRID_SIZE = 24
-numPOI = 36
+numPOI = 14
 trainRatio = 0.8
 totalData = 50
 validRatio = 0.1
@@ -28,7 +28,7 @@ testRatio = 0.1
 filterRatio = 0.7
 ##############################################
 
-explore = Exploration(GRID_SIZE, numPOI, filterRatio)
+explore = Exploration(GRID_SIZE, numPOI)
 mask = Mask()
 #gridDimension = [GRID_SIZE, GRID_SIZE]
 test_func = None
@@ -51,19 +51,26 @@ def generate(ratio,totalData,tpe):
 	groundTruthData = []
 	tunnelMapData = []
 	maskData = []
+	#adaptivemaskData = []
+	#percent_exploredData = []
 	for i in range(int(ratio * totalData)):
 		groundTruth = explore.generate_map()
-		# explored (tunnel)map will have 1.0 in place of frontierVectors 
-		tunnelMap, frontierVector = explore.flood_fill_filter()
+		percent_explored = np.random.uniform(0.2,0.8)
+		#percent_exploredData.append(percent_explored)
+		tunnelMap, frontierVector = explore.flood_fill_filter(percent_explored)
 		global test_func
 		test_func= frontierVector
 		mask.set_map(tunnelMap, frontierVector)
 		masking = mask.get_mask()
-
         #store all the elements
+		groundTruth = groundTruth * np.logical_not(mask.get_adaptive_mask(masking)) + tunnelMap
+		explore.set_occupancy_map(groundTruth)
+		groundTruth, _ = explore.flood_fill_filter(1.0)
+
 		groundTruthData.append(np.float32(groundTruth))
 		tunnelMapData.append(np.float32(tunnelMap))
-		maskData.append(np.float32(masking))
+		maskData.append(np.float32(mask.get_adaptive_mask(masking)))
+		#adaptivemaskData.append(np.float32(mask.get_adaptive_mask(masking)))
 		print(
         '\r[Generating Data {} of {}]'.format(
             i,

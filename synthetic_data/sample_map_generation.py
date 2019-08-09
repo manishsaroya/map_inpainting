@@ -54,12 +54,12 @@ def generate(ratio,totalData,tpe):
 	groundTruthData = []
 	tunnelMapData = []
 	maskData = []
-	adaptivemaskData = []
-	percent_exploredData = []
+	#adaptivemaskData = []
+	#percent_exploredData = []
 	for i in range(int(ratio * totalData)):
 		groundTruth = explore.generate_map()
 		percent_explored = np.random.uniform(0.2,0.8)
-		percent_exploredData.append(percent_explored)
+		#percent_exploredData.append(percent_explored)
 		tunnelMap, frontierVector = explore.flood_fill_filter(percent_explored)
 		global test_func
 		test_func= frontierVector
@@ -72,8 +72,8 @@ def generate(ratio,totalData,tpe):
 
 		groundTruthData.append(np.float32(groundTruth))
 		tunnelMapData.append(np.float32(tunnelMap))
-		maskData.append(np.float32(masking))
-		adaptivemaskData.append(np.float32(mask.get_adaptive_mask(masking)))
+		maskData.append(np.float32(mask.get_adaptive_mask(masking)))
+		#adaptivemaskData.append(np.float32(mask.get_adaptive_mask(masking)))
 		print(
         '\r[Generating Data {} of {}]'.format(
             i,
@@ -82,7 +82,7 @@ def generate(ratio,totalData,tpe):
         end=''
         )
 	print('')
-	return groundTruthData, tunnelMapData, maskData, adaptivemaskData, percent_exploredData
+	return groundTruthData, tunnelMapData, maskData#, adaptivemaskData, percent_exploredData
 
 groundTruthData = {}
 tunnelMapData = {}
@@ -90,7 +90,7 @@ maskData = {}
 adaptivemaskData = {}
 percent_exploredData = {}
 
-groundTruthData["sample"], tunnelMapData["sample"], maskData["sample"], adaptivemaskData["sample"], percent_exploredData["sample"] = generate(trainRatio,totalData,"sample")
+groundTruthData["sample"], tunnelMapData["sample"], maskData["sample"] = generate(trainRatio,totalData,"sample")
 if not os.path.exists(file_path):
     os.makedirs('{:s}'.format(file_path))
 
@@ -99,17 +99,17 @@ sanityCheckMasknExplored(groundTruthData["sample"], tunnelMapData["sample"], mas
 for i in range(len(groundTruthData['sample'])):
 
 	fig = plt.figure(figsize=(10,10))
-	image, masking,gt, adaptivemask= tunnelMapData['sample'][i], maskData['sample'][i] , groundTruthData['sample'][i], adaptivemaskData['sample'][i]
+	image, masking,gt = tunnelMapData['sample'][i], maskData['sample'][i] , groundTruthData['sample'][i]
 	fig.add_subplot(2,2,1)
 	#pdb.set_trace()
-	plt.imshow(numpy.stack([gt,masking,adaptivemask],axis=-1))
-	#plt.imshow(numpy.stack([gt,gt,gt],axis=-1))
+	#plt.imshow(numpy.stack([gt,masking,adaptivemask],axis=-1))
+	plt.imshow(numpy.stack([gt,gt,gt],axis=-1))
 	plt.title("True image")
 	plt.ylabel('y')
 	plt.xlabel('x')
 
 	fig.add_subplot(2,2,2)
-	title = "{}% explored Map".format(percent_exploredData["sample"][i])
+	title = "variable % explored Map"
 	plt.imshow(numpy.stack([image, image, image],axis=-1))
 	plt.title(title)
 	plt.ylabel('y')
@@ -126,7 +126,7 @@ for i in range(len(groundTruthData['sample'])):
 	#for p in test_func:			# Why doing this things, comment or remove it.
 	#	image[p[0],p[1]] = 0.5
 	#plt.imshow(abs(groundTruthData["sample"][i] * maskData["sample"][i] - tunnelMapData["sample"][i]))
-	plt.imshow(numpy.stack([adaptivemask, adaptivemask, adaptivemask],axis=-1))
+	plt.imshow(numpy.stack([masking, masking, masking],axis=-1))
 	plt.title("explored with forntiers")
 	plt.ylabel('explored_y')
 	plt.xlabel('explored_x')

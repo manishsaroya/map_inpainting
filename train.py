@@ -44,9 +44,9 @@ parser = argparse.ArgumentParser()
 # training options
 parser.add_argument('--root', type=str, default='/srv/datasets/Places2')
 parser.add_argument('--mask_root', type=str, default='./masks')
-parser.add_argument('--save_dir', type=str, default='./snapshots/toploss24')
-parser.add_argument('--log_dir', type=str, default='./logs/toploss24')
-parser.add_argument('--log_dir_val', type=str, default='./logs/toploss24_validation')
+parser.add_argument('--save_dir', type=str, default='./snapshots/toploss24variabletest')
+parser.add_argument('--log_dir', type=str, default='./logs/toploss24variabletest')
+parser.add_argument('--log_dir_val', type=str, default='./logs/toploss24_validationvariabletest')
 parser.add_argument('--lr', type=float, default=2e-4)
 parser.add_argument('--lr_finetune', type=float, default=5e-5)
 parser.add_argument('--max_iter', type=int, default=500000)
@@ -176,14 +176,16 @@ for i in tqdm(range(start_iter, args.max_iter)):
     if (i + 1) % args.vis_interval == 0:
         model.eval()
         #print("Going to evaluate")
+       	#pdb.set_trace()
         evaluate(model, dataset_val, device,
-                 '{:s}/images/test_{:d}.jpg'.format(args.save_dir, i + 1), if_save=True)
-    #if (i+1)%500 == 0:
-    #    print(i+1," iterations completed","loss is ",loss.item())
+                 '{:s}/images/test_{:d}.jpg'.format(args.save_dir, i + 1),num_=1, if_save=True)
+
 dataset_test = dataset('test',args.grid_size)
 torch.save(model.state_dict(), 'mapinpainting_adaptive_mask.pth')
 model.eval()
-evaluate(model, dataset_test,device,'result_adaptive.jpg',True)
+if not os.path.exists(args.save_dir):
+	os.makedirs('./final_output')
+evaluate(model, dataset_test,device,'./final_output',num_=20,if_save=True)
 
 writer.close()
 writer_val.close()

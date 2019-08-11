@@ -69,7 +69,7 @@ class PersistenceDgm(nn.Module):
 
 
 size = 24
-with open('ground_truth_dataset_{}.pickle'.format(size),'rb') as tf:
+with open('./variable/ground_truth_dataset_{}.pickle'.format(size),'rb') as tf:
 	groundTruthData = pickle.load(tf)
 
 pobj = PersistenceDgm((size,size))
@@ -81,9 +81,9 @@ persistence_z["train"], persistence_f["train"] = pobj.generatePersistence(ground
 persistence_z["validation"], persistence_f["validation"] = pobj.generatePersistence(groundTruthData["validation"], "validation")
 persistence_z["test"], persistence_f["test"] = pobj.generatePersistence(groundTruthData["test"], "test")
 
-with open('ground_truth_dataset_peristenceDgm_z_{}.pickle'.format(size), 'wb') as handle:
+with open('./variable/ground_truth_dataset_peristenceDgm_z_{}.pickle'.format(size), 'wb') as handle:
 	pickle.dump(persistence_z, handle)
 
-with open('ground_truth_dataset_peristenceDgm_f_{}.pickle'.format(size), 'wb') as handle:
+with open('./variable/ground_truth_dataset_peristenceDgm_f_{}.pickle'.format(size), 'wb') as handle:
     pickle.dump(persistence_f, handle)
 #pdb.set_trace()

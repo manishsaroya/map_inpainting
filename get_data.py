@@ -2,15 +2,15 @@ import numpy as np
 import pdb
 import pickle
 def dataset(tp, grid_size):
-	with open('synthetic_data/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
+	with open('synthetic_data/variable/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
 		gt = pickle.load(tf)
-	with open('synthetic_data/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
+	with open('synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
 		masks = pickle.load(rf)
-	with open('synthetic_data/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
+	with open('synthetic_data/variable/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
 		images = pickle.load(f)
-	with open('synthetic_data/ground_truth_dataset_peristenceDgm_z_{}.pickle'.format(grid_size),'rb') as f:
+	with open('synthetic_data/variable/ground_truth_dataset_peristenceDgm_z_{}.pickle'.format(grid_size),'rb') as f:
 		persistence_z = pickle.load(f)
-	with open('synthetic_data/ground_truth_dataset_peristenceDgm_f_{}.pickle'.format(grid_size),'rb') as f:
+	with open('synthetic_data/variable/ground_truth_dataset_peristenceDgm_f_{}.pickle'.format(grid_size),'rb') as f:
 		persistence_f = pickle.load(f)
 	d = []
 	if tp == 'train':

@@ -32,7 +32,6 @@ def evaluate(model, dataset, device, output_dir,if_save=False, num_=20):
         gt = gt[0][0] 
         mask = mask[0][0] 
         output = output[0][0] 
-
         if if_save== True:
             fig = plt.figure(figsize=(15,10))
 

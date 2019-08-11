@@ -19,7 +19,7 @@ import pdb
 GRID_SIZE = 24
 numPOI = 14
 trainRatio = 0.8
-totalData = 50000
+totalData = 500
 validRatio = 0.1
 testRatio = 0.1
 #############################################################
@@ -89,6 +89,7 @@ groundTruthData["train"], tunnelMapData["train"], maskData["train"]  = generate(
 groundTruthData["validation"], tunnelMapData["validation"], maskData["validation"] = generate(validRatio,totalData,"validation")
 groundTruthData["test"], tunnelMapData["test"], maskData["test"] = generate(testRatio,totalData,"testing")
 
+
 a = sanityCheckMasknExplored(groundTruthData["train"], tunnelMapData["train"], maskData["train"])
 b = sanityCheckMasknExplored(groundTruthData["validation"], tunnelMapData["validation"], maskData["validation"])
 c = sanityCheckMasknExplored(groundTruthData["test"], tunnelMapData["test"], maskData["test"])
@@ -106,6 +107,7 @@ if a+b+c ==0:
 	    pickle.dump(maskData, handle)
 else:
 	print("SANITY CHECK FAILED- NOT SAVING ANY DATA")
+
 
 fig = plt.figure(figsize=(10,10))
 image, masking,gt = tunnelMapData['train'][0], maskData['train'][0] , groundTruthData['train'][0]

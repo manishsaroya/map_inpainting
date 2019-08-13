@@ -3,7 +3,7 @@ import csv
 from numpy import concatenate
 
 content = []
-with open('experiments_all_cumulative_score_32.csv') as file:
+with open('fast_toploss_score24.csv') as file:
 	readCSV = csv.reader(file, delimiter=',')
 	print(readCSV)
 	for row in readCSV:

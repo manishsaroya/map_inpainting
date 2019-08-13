@@ -13,9 +13,9 @@ def shutdown():
     print('\nGoodbye')
 
 def get_prediction_and_ground_truth(grid_size):
-    with open('../synthetic_data/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
+    with open('../synthetic_data/variable/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
         gt = pickle.load(tf)
-    with open('../synthetic_data/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
+    with open('../synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
         masks = pickle.load(rf)
 
     true_prediction = []
@@ -27,11 +27,11 @@ def get_prediction_and_ground_truth(grid_size):
     return true_prediction, ground_truth
 
 def test_dataset(grid_size):
-    with open('../synthetic_data/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
+    with open('../synthetic_data/variable/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
         gt = pickle.load(tf)
-    with open('../synthetic_data/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
+    with open('../synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
         masks = pickle.load(rf)
-    with open('../synthetic_data/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
+    with open('../synthetic_data/variable/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
         images = pickle.load(f)
     d = []
     for i in range(len(gt['test'])):
@@ -47,12 +47,12 @@ def convert(image):
 
 if __name__ == "__main__":
 
-    grid_size = 32 # 16
-    num_tunnel_files = 50
+    grid_size = 24 # 16
+    num_tunnel_files = 2
     #value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
     value_distance = ['closest', 'normal']
     #value_distance = ['normal']
-    visualize = True
+    visualize = False
     true_prediction, ground_truth = get_prediction_and_ground_truth(grid_size)
     network_input = test_dataset(grid_size)
 

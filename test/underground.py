@@ -129,23 +129,21 @@ class Underground:
 	def _predict_artifact(self, image, data_set):
 		device = torch.device('cuda')
 		size = (self._grid_size, self._grid_size)
+		# TODO: Remove normalization
 		img_transform = transforms.Compose(
 		    [transforms.Resize(size=size), transforms.ToTensor(),
 		     transforms.Normalize(mean=opt.MEAN, std=opt.STD)])
 		mask_transform = transforms.Compose(
 		    [transforms.Resize(size=size), transforms.ToTensor()])
 
-		#dataset_val = Places2(args.root, img_transform, mask_transform, 'val')
-		#dataset_val = torch.tensor(dataset('test',args.image_size))
 		dataset_val = data_set
 		model = PConvUNet(layer_size=3, input_channels=1).to(device)
-		load_ckpt('../snapshots/toploss32test/ckpt/500000.pth', [('model', model)])
+		load_ckpt('../snapshots/toploss24variable/ckpt/500000.pth', [('model', model)])
 		#model.load_state_dict(torch.load('../snapshots/toploss32test/ckpt/500000.pth', map_location='cuda'))
 		#model.load_state_dict(torch.load('mapinpainting_10000.pth'))
 		model.eval()
 		network_output = self.run_network(model, dataset_val, device, 'resulttoploss.jpg',False)
 
-		#network_output = network_output.reshape(self._grid_size, self._grid_size).detach().numpy()
 		self._predicted_artifact_locations = []
 		self._predicted_artifact_fidelity_map = numpy.zeros_like(self._tunnel_map)
 		for x in range(len(network_output)):
@@ -189,17 +187,6 @@ class Underground:
 				# self._artifact_fidelity_map[y][x] += (self._x_dim + self._y_dim) - (numpy.sqrt((y - artifact_y)**2 + (x - artifact_x)**2) + 1)
 				self._predicted_artifact_fidelity_map[y][x] += 5.0/(numpy.sqrt((y - artifact_y)**2 + (x - artifact_x)**2) + 1)
 
-	# def _add_artifact_fidelity_2(self, artifact_x, artifact_y):
-	# 	for y in range(self._y_dim):
-	# 		for x in range(self._x_dim):
-	# 			self._artifact_fidelity_map[y][x] += 5.0/(numpy.sqrt((y - artifact_y)**2 + (x - artifact_x)**2) + 1)
-	# 			if x == artifact_x and y == artifact_y:
-	# 				self._artifact_fidelity_map[y][x] += 5
-	# 			elif numpy.sqrt((y - artifact_y)**2 + (x - artifact_x)**2) <= 1:
-	# 				# print("Square Root Term", numpy.sqrt((y - artifact_y)**2 + (x - artifact_x)**2))
-	# 				# print("artifact x y", artifact_x, artifact_y)
-	# 				# print('x y', x, y)
-	# 				self._artifact_fidelity_map += 0.5
 
 	def _add_artifact_fidelity(self, artifact_x, artifact_y):
 		for y in range(self._y_dim):

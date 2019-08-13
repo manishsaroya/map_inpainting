@@ -50,7 +50,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 	# Introduce a robot, only one for now
 	wall_e = Robot(x_dim, y_dim)
 
-	# Ininialize frontier
+	# Initialize frontier
 	frontier = Frontier()
 
 	if visualize:

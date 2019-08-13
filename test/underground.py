@@ -4,7 +4,7 @@
 
 This module initialises the main environment class
 
-Author: Abhijeet Agnihotri
+Author: Abhijeet Agnihotri, Manish Saroya
 """
 
 import torch
@@ -28,16 +28,16 @@ class Underground:
 		self._tunnel_map = tunnel_filename  # TODO: Change the variable name, its not a file name now.
 		self._observation_radius = 1
 		self._grid_size = grid_size
-		# artifact locations = (x, y)
-		self._predict_artifact(self._tunnel_map, self._neural_input)
+
+		self._predict_artifact(self._neural_input)
+		
 		self._artifact_locations = [(x[1], x[0]) for x in artifact_filename.tolist()]
 		self._updated_artifact_locations = self._artifact_locations[:]
 		self._y_dim, self._x_dim = self._tunnel_map.shape
-		# self._action_dict = {"none": 0, "up": 1, "right": 2, "down": 3, "left": 4}
-		# self._action_coords = [(0, 0), (0, -1), (1, 0), (0, 1), (-1, 0)]
 		self._action_dict = {"up": 0, "right": 1, "down": 2, "left": 3}  # Actions without a "none" option
 		self._action_coords = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # Actions without a "none" option
 		self._artifact_fidelity_map = numpy.zeros_like(self._tunnel_map)
+		
 		self._update_artifact_fidelity_map()
 		self._update_predicted_artifact_fidelity_map()
 		# This helps debug. Only need to run once per tunnel map
@@ -56,11 +56,6 @@ class Underground:
 	    image = image.unsqueeze(0)
 	    mask = mask.unsqueeze(0)
 	    gt = gt.unsqueeze(0)
-
-	    #image = torch.stack(image)
-
-	    #mask = torch.stack(mask)
-	    #gt = torch.stack(gt)
 
 	    with torch.no_grad():
 	        output, _ = model(image.to(device), mask.to(device))
@@ -82,36 +77,24 @@ class Underground:
 	        fig.add_subplot(2,3,1)
 	        plt.imshow(gt.numpy())
 	        plt.title("Ground Truth Map")
-	        #plt.ylabel('y')
-	        #plt.xlabel('x')
-
 
 	        fig.add_subplot(2,3,4)
 	        plt.imshow(numpy.stack([image.numpy(), image.numpy(), mask.numpy()],axis=-1))
 	        plt.title("Mask")
-	        #plt.ylabel('mask_y')
-	        #plt.xlabel('mask_x')
-
 
 	        fig.add_subplot(2,3,2)
 	        title = "70% explored Map"
 	        plt.imshow(image.numpy())
 	        plt.title(title)
-	        #plt.ylabel('masked_y')
-	        #plt.xlabel('masked_x')
-	        plt.savefig("figure_8.png")
 
 	        fig.add_subplot(2,3,3)
 	        plt.imshow(output.numpy())
 	        plt.title("Predicted Map")
-	        #plt.ylabel('output_y')
-	        #plt.xlabel('output_x')
 
 	        fig.add_subplot(2,3,5)
 	        plt.imshow(1.0/(1.0 + numpy.exp(-output.numpy())) > 0.55)
 	        print(output.numpy().max())
 	        print(output.numpy().min())
-	        #plt.imshow(numpy.stack([output.numpy(), image.numpy(), mask.numpy()],axis=-1),cmap='hot')
 	        plt.title("output image")
 	        plt.ylabel('output_y')
 	        plt.xlabel('output_x')
@@ -126,21 +109,13 @@ class Underground:
 	        plt.savefig("all_images.png")
 	    return prediction
 
-	def _predict_artifact(self, image, data_set):
+	def _predict_artifact(self, dataset_val):
 		device = torch.device('cuda')
 		size = (self._grid_size, self._grid_size)
-		# TODO: Remove normalization
-		img_transform = transforms.Compose(
-		    [transforms.Resize(size=size), transforms.ToTensor(),
-		     transforms.Normalize(mean=opt.MEAN, std=opt.STD)])
-		mask_transform = transforms.Compose(
-		    [transforms.Resize(size=size), transforms.ToTensor()])
 
-		dataset_val = data_set
 		model = PConvUNet(layer_size=3, input_channels=1).to(device)
 		load_ckpt('../snapshots/toploss24variable/ckpt/500000.pth', [('model', model)])
 		#model.load_state_dict(torch.load('../snapshots/toploss32test/ckpt/500000.pth', map_location='cuda'))
-		#model.load_state_dict(torch.load('mapinpainting_10000.pth'))
 		model.eval()
 		network_output = self.run_network(model, dataset_val, device, 'resulttoploss.jpg',False)
 
@@ -224,6 +199,12 @@ class Underground:
 			return False
 
 	def _get_observation(self, state):
+		""" Input: (state): position of the robot. 
+			return: (observation):matrix with artifact fidility value stored in free space other wise 0 for obstacles, 
+								  matrix demension depend on observation radius.
+								  Diagonal values are included in the observations.
+		"""
+
 		# state and current observation are (x, y)
 		self._current_observation = numpy.zeros((self._observation_radius*2 + 1, self._observation_radius*2 + 1))
 		for y in range(self._observation_radius*2 + 1):

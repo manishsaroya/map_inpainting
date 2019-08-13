@@ -77,7 +77,7 @@ if __name__ == "__main__":
                     #artifact_file = list(true_prediction[i]) #'./maps_{}/artifacts_{}.npy'.format(grid_size, i)
                     artifact_file = np.array(artifact_file)
                     #print(artifact_file)
-                    time.sleep(5) 
+                    time.sleep(0.001) 
                     for e in value_distance:
                         print("Value", e)
                         steps, reward, score_list, points_found = testing_NN.main(e, tunnel_file, artifact_file, network_input[i], visualize)

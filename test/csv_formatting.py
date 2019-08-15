@@ -26,7 +26,7 @@ for i in content:
 		std_list[v].append(np.std(values[v]))
 
 explore_type = ['Value', 'Quarter', 'Closest', 'Square_root','Normal']
-with open('formatted_cumulative_score1_24.csv', mode='w') as file:
+with open('formatted_fast_toploss_score24.csv', mode='w') as file:
 	format_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	for x in range(len(mean_list)):
 		to_write = concatenate([[explore_type[x]],['Mean'], mean_list[x]])

@@ -21,9 +21,9 @@ labels_in_short = ['Closest', 'Normal']
 labels_out_short = ['Closest First', 'Value / Distance']
 colors_short = ['darkorange', 'deepskyblue']
 
-with open('formatted_cumulative_score1_24.csv') as file:
-    readCSV = csv.reader(file, delimiter=',')
+with open('formatted_fast_toploss_score24.csv') as file:
 
+    readCSV = csv.reader(file, delimiter=',')
     for row in readCSV:
         for i in range(len(methods_long)):
             if row[0] == labels_in_long[i]:

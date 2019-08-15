@@ -17,7 +17,7 @@ sys.path.append('../')
 #from neural_network.artifact_prediction_cuda import Net
 from net import PConvUNet
 import opt
-from util.io import load_ckpt
+from util.io import load_ckpt, get_state_dict_on_cpu
 import pdb
 
 class Underground:
@@ -75,12 +75,15 @@ class Underground:
 	    return prediction
 
 	def _predict_artifact(self, dataset_val):
-		device = torch.device('cuda')
+		device = torch.device('cpu')
 		size = (self._grid_size, self._grid_size)
 
 		model = PConvUNet(layer_size=3, input_channels=1).to(device)
+		#pdb.set_trace()
 		load_ckpt('../snapshots/toploss24variable/ckpt/500000.pth', [('model', model)])
-		#model.load_state_dict(torch.load('../snapshots/toploss32test/ckpt/500000.pth', map_location='cuda'))
+		
+		#model.load_state_dict(torch.load('../snapshots/toploss24variable/ckpt/500000.pth', map_location='cpu'))
+		#get_state_dict_on_cpu(model)
 		model.eval()
 		network_output = self.run_network(model, dataset_val, device, 'resulttoploss.jpg',False)
 

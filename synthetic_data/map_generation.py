@@ -14,19 +14,25 @@ import numpy as np
 from x_map_gen import Exploration
 from mask_generation import Mask
 import matplotlib.pyplot as plt
+import os
 import pdb
 ######## Parameters for generating the database #############
 GRID_SIZE = 24
 numPOI = 14
-trainRatio = 0.8
-totalData = 500
-validRatio = 0.1
-testRatio = 0.1
+trainRatio = 0
+totalData = 100
+validRatio = 0
+testRatio = 1
 #############################################################
 
 ######### Exploration Parameters #############
 filterRatio = 0.7
+data_dir = "./variable"
 ##############################################
+
+if not os.path.exists(data_dir):
+	os.makedirs(data_dir)
+
 
 explore = Exploration(GRID_SIZE, numPOI)
 mask = Mask()
@@ -95,15 +101,15 @@ b = sanityCheckMasknExplored(groundTruthData["validation"], tunnelMapData["valid
 c = sanityCheckMasknExplored(groundTruthData["test"], tunnelMapData["test"], maskData["test"])
 
 if a+b+c ==0:
-	with open('./variable/ground_truth_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
+	with open('{:s}/ground_truth_dataset_{:d}.pickle'.format(data_dir, GRID_SIZE), 'wb') as handle:
 		pickle.dump(groundTruthData, handle)
 	# Normalize Data
 	#tunnelMapData["train"] = (tunnelMapData["train"]-np.mean(tunnelMapData["train"]))/ np.std(tunnelMapData["train"])
 	#tunnelMapData["validation"] = (tunnelMapData["validation"]-np.mean(tunnelMapData["train"]))/ np.std(tunnelMapData["train"])
 	#tunnelMapData["test"] = (tunnelMapData["test"]-np.mean(tunnelMapData["train"]))/ np.std(tunnelMapData["train"])
-	with open('./variable/image_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
+	with open('{:s}/image_dataset_{:d}.pickle'.format(data_dir, GRID_SIZE), 'wb') as handle:
 	    pickle.dump(tunnelMapData, handle)
-	with open('./variable/mask_dataset_{}.pickle'.format(GRID_SIZE), 'wb') as handle:
+	with open('{:s}/mask_dataset_{:d}.pickle'.format(data_dir, GRID_SIZE), 'wb') as handle:
 	    pickle.dump(maskData, handle)
 else:
 	print("SANITY CHECK FAILED- NOT SAVING ANY DATA")

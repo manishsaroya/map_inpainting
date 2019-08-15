@@ -21,7 +21,7 @@ labels_in_short = ['Closest', 'Normal']
 labels_out_short = ['Closest First', 'Value / Distance']
 colors_short = ['darkorange', 'deepskyblue']
 
-with open('formatted_cumulative_score_32.csv') as file:
+with open('formatted_cumulative_score1_24.csv') as file:
     readCSV = csv.reader(file, delimiter=',')
 
     for row in readCSV:
@@ -64,9 +64,9 @@ def make_plot(methods, labels_out, colors, name=None):
         plt.fill_between(counter, y_low, y_high, color=colors[k], alpha=.1)
 
     plt.legend(loc="lower right")
-    plt.title("Average and Standard Deviation for Percent of Artifacts Found")
+    plt.title("Average and Standard Deviation for Percent of Explored Area")
     plt.xlabel("Time Steps")
-    plt.ylabel("Percent of artifacts found")
+    plt.ylabel("Percent of Explored Area")
 
     # If no file name was passed, show the plot. Otherwise, save as that file name
     if not name:
@@ -76,5 +76,5 @@ def make_plot(methods, labels_out, colors, name=None):
 
 
 if __name__ == "__main__":
-    make_plot(methods_short, labels_out_short, colors_short, 'Percent_found_two_variable.png')
+    make_plot(methods_short, labels_out_short, colors_short, 'Percent_found_two_variable1_24.png')
     #make_plot(methods_long, labels_out_long, colors_long, 'Percent_found_all.png')

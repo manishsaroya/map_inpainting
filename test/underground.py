@@ -28,7 +28,7 @@ class Underground:
 		self._tunnel_map = tunnel_filename  # TODO: Change the variable name, its not a file name now.
 		self._observation_radius = 1
 		self._grid_size = grid_size
-
+		self._predicted_artifact_locations = []
 		self._predict_artifact(self._neural_input)
 		
 		self._artifact_locations = [(x[1], x[0]) for x in artifact_filename.tolist()]
@@ -44,8 +44,6 @@ class Underground:
 		# np.savetxt("artifact_fidelity.csv", self._artifact_fidelity_map, delimiter=',')
 
 	def run_network(self, model, dataset, device, filename,if_save=False):
-
-
         #print("Inside evaluate..." ," and filename is",filename)
 	    image, mask, gt = zip(*[dataset])
         #print(dataset[0])
@@ -71,42 +69,9 @@ class Underground:
 	    a = 1.0/(1.0 + numpy.exp(-output.numpy()))
 	    prediction = (a * abs(mask.numpy() - 1))
 	    #plt.show(plt.imshow(prediction))
+	
 	    if if_save== True:
-	        fig = plt.figure(figsize=(15,10))
-
-	        fig.add_subplot(2,3,1)
-	        plt.imshow(gt.numpy())
-	        plt.title("Ground Truth Map")
-
-	        fig.add_subplot(2,3,4)
-	        plt.imshow(numpy.stack([image.numpy(), image.numpy(), mask.numpy()],axis=-1))
-	        plt.title("Mask")
-
-	        fig.add_subplot(2,3,2)
-	        title = "70% explored Map"
-	        plt.imshow(image.numpy())
-	        plt.title(title)
-
-	        fig.add_subplot(2,3,3)
-	        plt.imshow(output.numpy())
-	        plt.title("Predicted Map")
-
-	        fig.add_subplot(2,3,5)
-	        plt.imshow(1.0/(1.0 + numpy.exp(-output.numpy())) > 0.55)
-	        print(output.numpy().max())
-	        print(output.numpy().min())
-	        plt.title("output image")
-	        plt.ylabel('output_y')
-	        plt.xlabel('output_x')
-
-	        fig.add_subplot(2,3,6)
-	        #a = 1.0/(1.0 + numpy.exp(-output.numpy()))
-	        #prediction = (a * abs(mask.numpy() - 1))
-	        plt.imshow(prediction > 0.55)
-	        plt.title("Predicted Map")
-
-	        plt.show()
-	        plt.savefig("all_images.png")
+	    	self._save_output(gt,image,mask,output)
 	    return prediction
 
 	def _predict_artifact(self, dataset_val):
@@ -119,7 +84,6 @@ class Underground:
 		model.eval()
 		network_output = self.run_network(model, dataset_val, device, 'resulttoploss.jpg',False)
 
-		self._predicted_artifact_locations = []
 		self._predicted_artifact_fidelity_map = numpy.zeros_like(self._tunnel_map)
 		for x in range(len(network_output)):
 			for y in range(len(network_output[0])):
@@ -130,18 +94,6 @@ class Underground:
 		#plt.imshow(self._predicted_artifact_fidelity_map)
 		#plt.pause(5.0)
 
-	def _get_predicted_artifact_locations(self):
-		return self._predicted_artifact_locations
-
-	def _get_artifact_locations(self):
-		return self._updated_artifact_locations
-
-	def _get_artifact_fidelity_map(self):
-		return self._artifact_fidelity_map
-
-	def _get_predicted_artifact_fidelity_map(self):
-		return self._predicted_artifact_fidelity_map
-
 	def _update_artifact_fidelity_map(self):
 		self._artifact_fidelity_map = numpy.zeros_like(self._tunnel_map)
 
@@ -150,6 +102,7 @@ class Underground:
 		self._artifact_fidelity_map = numpy.multiply(self._artifact_fidelity_map, self._tunnel_map)
 
 	def _update_predicted_artifact_fidelity_map(self):
+		# update it corresponding to predicted map fidelity value
 		self._predicted_artifact_fidelity_map = numpy.zeros_like(self._tunnel_map)
 
 		for artifact in self._updated_predicted_artifact_locations:
@@ -216,4 +169,54 @@ class Underground:
 				else:
 					self._current_observation[x][y] = 0
 		return self._current_observation
+
+	def _save_output(self, gt, image, mask,output):
+		fig = plt.figure(figsize=(15,10))
+
+		fig.add_subplot(2,3,1)
+		plt.imshow(gt.numpy())
+		plt.title("Ground Truth Map")
+
+		fig.add_subplot(2,3,4)
+		plt.imshow(numpy.stack([image.numpy(), image.numpy(), mask.numpy()],axis=-1))
+		plt.title("Mask")
+
+		fig.add_subplot(2,3,2)
+		title = "70% explored Map"
+		plt.imshow(image.numpy())
+		plt.title(title)
+
+		fig.add_subplot(2,3,3)
+		plt.imshow(output.numpy())
+		plt.title("Predicted Map")
+
+		fig.add_subplot(2,3,5)
+		plt.imshow(1.0/(1.0 + numpy.exp(-output.numpy())) > 0.55)
+		print(output.numpy().max())
+		print(output.numpy().min())
+		plt.title("output image")
+		plt.ylabel('output_y')
+		plt.xlabel('output_x')
+
+		fig.add_subplot(2,3,6)
+		#a = 1.0/(1.0 + numpy.exp(-output.numpy()))
+		#prediction = (a * abs(mask.numpy() - 1))
+		plt.imshow(prediction > 0.55)
+		plt.title("Predicted Map")
+
+		plt.show()
+		plt.savefig("all_images.png")
+
+
+	def _get_predicted_artifact_locations(self):
+		return self._predicted_artifact_locations
+
+	def _get_artifact_locations(self):
+		return self._updated_artifact_locations
+
+	def _get_artifact_fidelity_map(self):
+		return self._artifact_fidelity_map
+
+	def _get_predicted_artifact_fidelity_map(self):
+		return self._predicted_artifact_fidelity_map
 

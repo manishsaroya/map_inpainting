@@ -48,7 +48,7 @@ def convert(image):
 if __name__ == "__main__":
 
     grid_size = 24 # 16
-    num_tunnel_files = 2
+    num_tunnel_files = 100
     #value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
     value_distance = ['closest', 'normal']
     #value_distance = ['normal']
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     try:
         print('Started exploring\n')
-        with open('fast_toploss_score{}.csv'.format(grid_size), mode='w') as experiments:
+        with open('fast_toploss_score1_{}.csv'.format(grid_size), mode='w') as experiments:
             experiment_writer = csv.writer(experiments, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             for i in range(0, num_tunnel_files):
                 # print('')

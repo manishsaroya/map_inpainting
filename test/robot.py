@@ -6,20 +6,27 @@ This module initializes the robot class
 
 Author: Abhijeet Agnihotri
 """
+# Please not that the simulator has x and y swaped as compared to map generation module.
+
 
 import numpy as np
-
+import pdb
 
 class Robot:
 
-	def __init__(self, x_dim, y_dim):
+	def __init__(self, x_dim, y_dim, neural_input):
 		self._x_dim = x_dim
 		self._y_dim = y_dim
 		self._tunnel_grid = np.zeros((self._x_dim, self._y_dim))
-		self._explored_map = np.zeros_like(self._tunnel_grid)
+		# initializing explored map.
+		pdb.set_trace()
+		self._explored_map = np.transpose(neural_input[0]) #np.zeros_like(self._tunnel_grid)
 		# Keeps track of fidelity values in spaces that have been observed but not explored
 		self._observed_map = np.zeros_like(self._tunnel_grid)
 		self._frontiers = np.zeros_like(self._tunnel_grid)
+		for p in neural_input[3]:
+			self._frontiers[p[1],p[0]] = 1   # Note the transpose action
+
 		# Definition of entry point can be changed subject to map generation
 		# Note: state = (x,y)
 		self._entry_point = [int(self._x_dim/2), 0]

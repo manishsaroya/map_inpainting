@@ -21,11 +21,7 @@ def save_ckpt(ckpt_name, models, optimizers, n_iter):
 
 
 def load_ckpt(ckpt_name, models, device=torch.device('cpu'), optimizers=None):
-<<<<<<< Updated upstream
     ckpt_dict = torch.load(ckpt_name, map_location=device)
-=======
-    ckpt_dict = torch.load(ckpt_name,map_location=device)
->>>>>>> Stashed changes
     for prefix, model in models:
         assert isinstance(model, nn.Module)
         model.load_state_dict(ckpt_dict[prefix], strict=False)

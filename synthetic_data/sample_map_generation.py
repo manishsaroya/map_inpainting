@@ -56,11 +56,13 @@ def generate(ratio,totalData,tpe):
 	maskData = []
 	adaptivemaskData = []
 	percent_exploredData = []
+	frontierVectorData = []
 	for i in range(int(ratio * totalData)):
 		groundTruth = explore.generate_map()
 		percent_explored = np.random.uniform(0.2,0.8)
 		percent_exploredData.append(percent_explored)
 		tunnelMap, frontierVector = explore.flood_fill_filter(percent_explored)
+		frontierVectorData.append(frontierVector)
 		global test_func
 		test_func= frontierVector
 		mask.set_map(tunnelMap, frontierVector)
@@ -82,15 +84,18 @@ def generate(ratio,totalData,tpe):
         end=''
         )
 	print('')
-	return groundTruthData, tunnelMapData, maskData, adaptivemaskData, percent_exploredData
+	return groundTruthData, tunnelMapData, maskData, adaptivemaskData, percent_exploredData, frontierVectorData
 
 groundTruthData = {}
 tunnelMapData = {}
 maskData = {}
 adaptivemaskData = {}
 percent_exploredData = {}
+frontierVectorData = {}
 
-groundTruthData["sample"], tunnelMapData["sample"], maskData["sample"], adaptivemaskData["sample"], percent_exploredData["sample"] = generate(trainRatio,totalData,"sample")
+groundTruthData["sample"], tunnelMapData["sample"], maskData["sample"], adaptivemaskData["sample"],\
+percent_exploredData["sample"], frontierVectorData["sample"] = generate(trainRatio,totalData,"sample")
+
 if not os.path.exists(file_path):
     os.makedirs('{:s}'.format(file_path))
 
@@ -123,10 +128,11 @@ for i in range(len(groundTruthData['sample'])):
 	plt.xlabel('x')
 
 	fig.add_subplot(2,2,4)
-	#for p in test_func:			# Why doing this things, comment or remove it.
-	#	image[p[0],p[1]] = 0.5
+	for p in frontierVectorData["sample"][i]:			# Why doing this things, comment or remove it.
+		image[p[0],p[1]] = 0.5
 	#plt.imshow(abs(groundTruthData["sample"][i] * maskData["sample"][i] - tunnelMapData["sample"][i]))
-	plt.imshow(numpy.stack([adaptivemask, adaptivemask, adaptivemask],axis=-1))
+	#plt.imshow(numpy.stack([adaptivemask, adaptivemask, adaptivemask],axis=-1))
+	plt.imshow(numpy.stack([image, image, image],axis=-1))
 	plt.title("explored with forntiers")
 	plt.ylabel('explored_y')
 	plt.xlabel('explored_x')

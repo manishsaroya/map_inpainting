@@ -31,7 +31,7 @@ class Underground:
 		self._predicted_artifact_locations = []
 		self._predict_artifact(self._neural_input)
 		
-		self._artifact_locations = [(x[1], x[0]) for x in artifact_filename.tolist()]
+		self._artifact_locations = [(x[1], x[0]) for x in artifact_filename.tolist()] # Transpose action on the artifact_locations
 		self._updated_artifact_locations = self._artifact_locations[:]
 		self._y_dim, self._x_dim = self._tunnel_map.shape
 		self._action_dict = {"up": 0, "right": 1, "down": 2, "left": 3}  # Actions without a "none" option
@@ -40,12 +40,10 @@ class Underground:
 		
 		self._update_artifact_fidelity_map()
 		self._update_predicted_artifact_fidelity_map()
-		# This helps debug. Only need to run once per tunnel map
-		# np.savetxt("artifact_fidelity.csv", self._artifact_fidelity_map, delimiter=',')
 
 	def run_network(self, model, dataset, device, filename,if_save=False):
         #print("Inside evaluate..." ," and filename is",filename)
-	    image, mask, gt = zip(*[dataset])
+	    image, mask, gt, frontiers = zip(*[dataset])
         #print(dataset[0])
 	    image  = torch.as_tensor(image)
 	    mask = torch.as_tensor(mask)
@@ -81,9 +79,6 @@ class Underground:
 		model = PConvUNet(layer_size=3, input_channels=1).to(device)
 		#pdb.set_trace()
 		load_ckpt('../snapshots/toploss24variable/ckpt/500000.pth', [('model', model)])
-		
-		#model.load_state_dict(torch.load('../snapshots/toploss24variable/ckpt/500000.pth', map_location='cpu'))
-		#get_state_dict_on_cpu(model)
 		model.eval()
 		network_output = self.run_network(model, dataset_val, device, 'resulttoploss.jpg',False)
 

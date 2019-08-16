@@ -48,7 +48,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 	score_list = np.ones(budget-1)
 
 	# Introduce a robot, only one for now
-	wall_e = Robot(x_dim, y_dim)
+	wall_e = Robot(x_dim, y_dim, neural_input)
 
 	# Initialize frontier
 	frontier = Frontier()

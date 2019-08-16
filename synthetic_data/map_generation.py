@@ -57,6 +57,7 @@ def generate(ratio,totalData,tpe):
 	groundTruthData = []
 	tunnelMapData = []
 	maskData = []
+	frontierVectorData = []
 	#adaptivemaskData = []
 	#percent_exploredData = []
 	for i in range(int(ratio * totalData)):
@@ -64,6 +65,7 @@ def generate(ratio,totalData,tpe):
 		percent_explored = np.random.uniform(0.2,0.8)
 		#percent_exploredData.append(percent_explored)
 		tunnelMap, frontierVector = explore.flood_fill_filter(percent_explored)
+		frontierVectorData.append(frontierVector)
 		global test_func
 		test_func= frontierVector
 		mask.set_map(tunnelMap, frontierVector)
@@ -85,15 +87,16 @@ def generate(ratio,totalData,tpe):
         end=''
         )
 	print('')
-	return groundTruthData, tunnelMapData, maskData
+	return groundTruthData, tunnelMapData, maskData, frontierVectorData
 
 groundTruthData = {}
 tunnelMapData = {}
 maskData = {}
+frontierVectorData = {}
 
-groundTruthData["train"], tunnelMapData["train"], maskData["train"]  = generate(trainRatio,totalData,"training")
-groundTruthData["validation"], tunnelMapData["validation"], maskData["validation"] = generate(validRatio,totalData,"validation")
-groundTruthData["test"], tunnelMapData["test"], maskData["test"] = generate(testRatio,totalData,"testing")
+groundTruthData["train"], tunnelMapData["train"], maskData["train"], frontierVectorData["train"]  = generate(trainRatio,totalData,"training")
+groundTruthData["validation"], tunnelMapData["validation"], maskData["validation"], frontierVectorData["validation"] = generate(validRatio,totalData,"validation")
+groundTruthData["test"], tunnelMapData["test"], maskData["test"], frontierVectorData["test"] = generate(testRatio,totalData,"testing")
 
 
 a = sanityCheckMasknExplored(groundTruthData["train"], tunnelMapData["train"], maskData["train"])
@@ -111,6 +114,8 @@ if a+b+c ==0:
 	    pickle.dump(tunnelMapData, handle)
 	with open('{:s}/mask_dataset_{:d}.pickle'.format(data_dir, GRID_SIZE), 'wb') as handle:
 	    pickle.dump(maskData, handle)
+	with open('{:s}/frontier_dataset_{:d}.pickle'.format(data_dir, GRID_SIZE), 'wb') as handle:
+	    pickle.dump(frontierVectorData, handle)
 else:
 	print("SANITY CHECK FAILED- NOT SAVING ANY DATA")
 

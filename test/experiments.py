@@ -15,31 +15,37 @@ def shutdown():
 def get_prediction_and_ground_truth(grid_size):
     with open('../synthetic_data/variable/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
         gt = pickle.load(tf)
-    with open('../synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
-        masks = pickle.load(rf)
+    #with open('../synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
+    #    masks = pickle.load(rf)
+    with open('../synthetic_data/variable/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
+        images = pickle.load(f)
 
     true_prediction = []
     ground_truth = []
     for i in range(len(gt['test'])):
-        true_prediction.append(gt['test'][i] * abs(masks['test'][i] - 1))
+        true_prediction.append(gt['test'][i]-images['test'][i])
         ground_truth.append(gt['test'][i])
 
     return true_prediction, ground_truth
 
 def test_dataset(grid_size):
+    """function to load the data in desired [img,mask,gt] list format"""
     with open('../synthetic_data/variable/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
         gt = pickle.load(tf)
     with open('../synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
         masks = pickle.load(rf)
     with open('../synthetic_data/variable/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
         images = pickle.load(f)
+    with open('../synthetic_data/variable/frontier_dataset_{}.pickle'.format(grid_size),'rb') as f:
+        frontiers = pickle.load(f)
     d = []
     for i in range(len(gt['test'])):
         image = images['test'][i]
         mask = masks['test'][i]
         ground_truth = gt['test'][i]
+        frontier = frontiers['test'][i]
         #d.append([convert(image),convert(mask),convert(ground_truth)])
-        d.append([image, mask, ground_truth])
+        d.append([image, mask, ground_truth, frontier])
     return d
 
 def convert(image):
@@ -52,7 +58,7 @@ if __name__ == "__main__":
     #value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
     value_distance = ['closest', 'normal']
     #value_distance = ['normal']
-    visualize = False
+    visualize = True
     true_prediction, ground_truth = get_prediction_and_ground_truth(grid_size)
     network_input = test_dataset(grid_size)
 

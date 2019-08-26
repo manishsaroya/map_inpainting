@@ -76,5 +76,5 @@ def make_plot(methods, labels_out, colors, name=None):
 
 
 if __name__ == "__main__":
-    make_plot(methods_short, labels_out_short, colors_short, 'Percent_found_two_variable1_24.png')
-    #make_plot(methods_long, labels_out_long, colors_long, 'Percent_found_all.png')
+    #make_plot(methods_short, labels_out_short, colors_short, 'Percent_found_two_variable1_24.png')
+    make_plot(methods_long, labels_out_long, colors_long, 'Percent_found_all.png')

@@ -14,26 +14,26 @@ import pdb
 
 class Robot:
 
-	def __init__(self, x_dim, y_dim, neural_input):
+	def __init__(self, x_dim, y_dim, neural_input, artifact_fidility=None):
 		self._x_dim = x_dim
 		self._y_dim = y_dim
 		self._tunnel_grid = np.zeros((self._x_dim, self._y_dim))
 		# initializing explored map.
-		pdb.set_trace()
-		self._explored_map = np.transpose(neural_input[0]) #np.zeros_like(self._tunnel_grid)
-		# Keeps track of fidelity values in spaces that have been observed but not explored
-		self._observed_map = np.zeros_like(self._tunnel_grid)
+		#pdb.set_trace()
 		self._frontiers = np.zeros_like(self._tunnel_grid)
+
 		for p in neural_input[3]:
 			self._frontiers[p[1],p[0]] = 1   # Note the transpose action
 
+		self._explored_map = np.transpose(neural_input[0]) - self._frontiers #np.zeros_like(self._tunnel_grid)
+		# Keeps track of fidelity values in spaces that have been observed but not explored
+		self._observed_map = np.transpose(neural_input[0]) #np.zeros_like(self._tunnel_grid)
+		
 		# Definition of entry point can be changed subject to map generation
 		# Note: state = (x,y)
 		self._entry_point = [int(self._x_dim/2), 0]
 		self._current_position = self._entry_point
 		self._update_explored_map()
-		# self._action_dict = {"none": 0, "up": 1, "right": 2, "down": 3, "left": 4}
-		# self._action_coords = [(0, 0), (0, -1), (1, 0), (0, 1), (-1, 0)]
 		# Actions without a "none" option
 		self._action_dict = {"up": 0, "right": 1, "down": 2, "left": 3}
 		self._action_coords = [(0, -1), (1, 0), (0, 1), (-1, 0)]
@@ -44,6 +44,12 @@ class Robot:
 		return self._current_position
 
 	def _next_action(self, goal, allowed_actions):
+		""" Input: 
+				goal, allowed_actions
+			Output: 
+				select action according to goal from allowed_actions
+				# NOTE DOES NOT take in account the diagonal actions  
+		"""
 		if self._current_position[0] < goal[0] and "right" in allowed_actions:
 			return "right"
 		elif self._current_position[0] > goal[0] and "left" in allowed_actions:

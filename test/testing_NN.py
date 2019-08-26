@@ -48,7 +48,8 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 	score_list = np.ones(budget-1)
 
 	# Introduce a robot, only one for now
-	wall_e = Robot(x_dim, y_dim, neural_input)
+	#if value_dist == 'closest':
+	wall_e = Robot(x_dim, y_dim, neural_input) #, fidelity= tunnel._get_predicted_artifact_fidelity_map)
 
 	# Initialize frontier
 	frontier = Frontier()

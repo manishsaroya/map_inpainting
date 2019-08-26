@@ -8,6 +8,8 @@ import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import time
+import copy
+import pdb
 
 def shutdown():
     print('\nGoodbye')
@@ -55,10 +57,10 @@ if __name__ == "__main__":
 
     grid_size = 24 # 16
     num_tunnel_files = 20
-    #value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
-    value_distance = ['closest', 'normal']
+    value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
+    #value_distance = ['closest', 'normal']
     #value_distance = ['normal']
-    visualize = True
+    visualize = False
     true_prediction, ground_truth = get_prediction_and_ground_truth(grid_size)
     network_input = test_dataset(grid_size)
 
@@ -71,7 +73,7 @@ if __name__ == "__main__":
                 print("##################")
                 print("Tunnel {}".format(i))
                 #if i not in [0, 1, 7, 9, 10, 14, 16, 17]:
-                if i==5:
+                if i==21:
                     print("skipping tunnel")
                 else:
                     tunnel_file = ground_truth[i] #'./maps_{}/tunnel_{}.npy'.format(grid_size, i)
@@ -86,7 +88,8 @@ if __name__ == "__main__":
                     time.sleep(0.001) 
                     for e in value_distance:
                         print("Value", e)
-                        steps, reward, score_list, points_found = testing_NN.main(e, tunnel_file, artifact_file, network_input[i], visualize)
+                        #pdb.set_trace()
+                        steps, reward, score_list, points_found = testing_NN.main(e, tunnel_file, artifact_file, copy.deepcopy(network_input[i]), visualize)
                         # print("Steps", steps)
                         # print("Reward", reward)
                         # print("POIs found", len(points_found))

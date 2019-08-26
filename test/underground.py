@@ -37,14 +37,14 @@ class Underground:
 		# update  _updated_predicted_artifact_locations and stores the fidility map as transpose of network output
 		self._predict_artifact(self._neural_input)
 		# TRANSPOSE
-		self._artifact_locations = [(x[1], x[0]) for x in artifact_filename.tolist()] # Transpose action on the artifact_locations
-		self._updated_artifact_locations = self._artifact_locations[:]
+		self._updated_artifact_locations = [(x[1], x[0]) for x in artifact_filename.tolist()] # Transpose action on the artifact_locations
 		# TRANSPOSE
 		self._y_dim, self._x_dim = self._tunnel_map.shape
 		self._action_dict = {"up": 0, "right": 1, "down": 2, "left": 3}  # Actions without a "none" option
 		self._action_coords = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # Actions without a "none" option
 		self._artifact_fidelity_map = numpy.zeros_like(self._tunnel_map)
 		
+		# fidility maps are created from scratch from zero matrix.
 		self._update_artifact_fidelity_map()
 		self._update_predicted_artifact_fidelity_map()
 
@@ -109,6 +109,7 @@ class Underground:
 					# TRANSPOSE			
 					_predicted_artifact_locations.append((y,x))
 					# TRANSPOSE
+					# These intensities are not being used. TODO
 					self._predicted_artifact_fidelity_map[y][x] += network_output[x][y]
 		
 		self._updated_predicted_artifact_locations = _predicted_artifact_locations[:]
@@ -208,7 +209,7 @@ class Underground:
 				if self._check_state_in_tunnel(_i_state):
 					# Return the fidelity value at the observed points
 					# TODO
-					self._current_observation[x][y] = self._predicted_artifact_fidelity_map[_i_state[1]][_i_state[0]]
+					self._current_observation[x][y] = self._artifact_fidelity_map[_i_state[1]][_i_state[0]]
 				else:
 					self._current_observation[x][y] = 0
 		return self._current_observation

@@ -64,7 +64,7 @@ class Frontier:
                 frontier_values.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
             elif value_dist == 'quarter':
                 #fronts.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
-                frontier_values.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]] / (path_length - 1)**(1/4))
+                frontier_values.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]] / (path_length - 1)**(2)) # TODO: change back to 1/4
             elif value_dist == 'closest':
                 #fronts.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
                 frontier_values.append(100 - (path_length - 1))

@@ -15,6 +15,13 @@ def shutdown():
     print('\nGoodbye')
 
 def get_prediction_and_ground_truth(grid_size):
+    """ Input: 
+            grid_size- size of data to be loaded
+
+        Outputs: 
+            true_prediction: prediction not including previous explored area, usefull for conputing artifacts location 
+            ground_truth: ground truth  of the unexplored area.
+    """
     with open('../synthetic_data/variable/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
         gt = pickle.load(tf)
     #with open('../synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
@@ -31,7 +38,7 @@ def get_prediction_and_ground_truth(grid_size):
     return true_prediction, ground_truth
 
 def test_dataset(grid_size):
-    """function to load the data in desired [img,mask,gt] list format"""
+    """function to load the data in desired [img,mask,gt, frontier] list format"""
     with open('../synthetic_data/variable/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
         gt = pickle.load(tf)
     with open('../synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:

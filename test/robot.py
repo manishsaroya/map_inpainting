@@ -21,18 +21,20 @@ class Robot:
 		# initializing explored map.
 		#pdb.set_trace()
 		self._frontiers = np.zeros_like(self._tunnel_grid)
+		old_version = False
+		if old_version:
+			self._explored_map = np.zeros_like(self._tunnel_grid)
+			self._observed_map = np.zeros_like(self._tunnel_grid)
+		else:
+			for p in neural_input[3]:
+				self._frontiers[p[1],p[0]] = 1   # Note the transpose action
+			self._explored_map = np.transpose(neural_input[0]) - self._frontiers #np.zeros_like(self._tunnel_grid)
+			# Keeps track of fidelity values in spaces that have been observed but not explored
+			self._observed_map = np.transpose(neural_input[0]) #np.zeros_like(self._tunnel_grid)
 
-		for p in neural_input[3]:
-			self._frontiers[p[1],p[0]] = 1   # Note the transpose action
-
-		self._explored_map = np.transpose(neural_input[0]) - self._frontiers #np.zeros_like(self._tunnel_grid)
-		# Keeps track of fidelity values in spaces that have been observed but not explored
-		self._observed_map = np.transpose(neural_input[0]) #np.zeros_like(self._tunnel_grid)
-		
 		# Definition of entry point can be changed subject to map generation
 		# Note: state = (x,y)
-		self._entry_point = [int(self._x_dim/2), 0]
-		self._current_position = self._entry_point
+		self._current_position = [int(self._x_dim/2), 0]
 		self._update_explored_map()
 		# Actions without a "none" option
 		self._action_dict = {"up": 0, "right": 1, "down": 2, "left": 3}
@@ -78,6 +80,8 @@ class Robot:
 		return self._reward
 
 	def _update_explored_map(self):
+		""" if the current position is not previously explored, add current position to explored map and remove frontier from current position 
+		"""
 		if self._explored_map[self._current_position[0], self._current_position[1]] == 0:
 			self._explored_map[self._current_position[0], self._current_position[1]] = 1
 			# Remove explored cells from the frontiers map

@@ -29,8 +29,8 @@ class Robot:
 		else:
 			for p in neural_input[3]:
 				self._frontiers[p[1],p[0]] = 1   # Note the transpose action
-			self._frontiers = self._frontiers * fidelity 
 			self._explored_map = np.transpose(neural_input[0]) - self._frontiers #np.zeros_like(self._tunnel_grid)
+			self._frontiers = self._frontiers * fidelity
 			# Keeps track of fidelity values in spaces that have been observed but not explored
 			self._observed_map = np.transpose(neural_input[0]) #np.zeros_like(self._tunnel_grid)
 

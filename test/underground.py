@@ -126,7 +126,7 @@ class Underground:
 
 		for artifact in self._updated_artifact_locations:
 			self._add_artifact_fidelity(artifact[0], artifact[1])
-		print("max fidility value", numpy.max(self._artifact_fidelity_map))
+		#print("max fidility value", numpy.max(self._artifact_fidelity_map))
 		#pdb.set_trace()
 		# filtering process
 		#self._artifact_fidelity_map = numpy.multiply(self._artifact_fidelity_map, self._tunnel_map)
@@ -210,7 +210,7 @@ class Underground:
 				if self._check_state_in_tunnel(_i_state):
 					# Return the fidelity value at the observed points
 					# TODO
-					self._current_observation[x][y] = self._artifact_fidelity_map[_i_state[1]][_i_state[0]]
+					self._current_observation[x][y] = self._predicted_artifact_fidelity_map[_i_state[1]][_i_state[0]]
 				else:
 					self._current_observation[x][y] = 0
 		return self._current_observation

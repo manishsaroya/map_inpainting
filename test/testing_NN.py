@@ -79,7 +79,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 			if visualize:
 				# Update visualization
-				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), tunnel._get_artifact_fidelity_map())
+				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), tunnel._get_predicted_artifact_fidelity_map())
 
 			# Pick the next frontier and get a path to that point
 			path = frontier.get_next_frontier(state, wall_e._observed_map, wall_e._frontiers, value_dist)
@@ -111,7 +111,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 					if visualize:
 						graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation,
-												wall_e._get_explored_map(), tunnel._get_artifact_fidelity_map())
+												wall_e._get_explored_map(), tunnel._get_predicted_artifact_fidelity_map())
 					# Update the distance to the next point
 					distance = abs(wall_e._get_current_location()[0] - point[0]) + abs(wall_e._get_current_location()[1] - point[1])
 

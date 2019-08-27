@@ -61,9 +61,11 @@ def generate(ratio,totalData,tpe):
 	#adaptivemaskData = []
 	#percent_exploredData = []
 	for i in range(int(ratio * totalData)):
+		# generate a map 
 		groundTruth = explore.generate_map()
+		# randomly select percent_explored
 		percent_explored = np.random.uniform(0.2,0.8)
-		#percent_exploredData.append(percent_explored)
+		# get percent explored map which will be image or network input later on
 		tunnelMap, frontierVector = explore.flood_fill_filter(percent_explored)
 		frontierVectorData.append(frontierVector)
 		global test_func

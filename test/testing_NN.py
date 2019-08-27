@@ -14,6 +14,7 @@ from underground import Underground
 from robot import Robot
 from frontier2 import Frontier
 import numpy as np
+import pdb
 
 
 GRID_SIZE = 32
@@ -49,7 +50,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 	# Introduce a robot, only one for now
 	#if value_dist == 'closest':
-	wall_e = Robot(x_dim, y_dim, neural_input) #, fidelity= tunnel._get_predicted_artifact_fidelity_map)
+	wall_e = Robot(x_dim, y_dim, neural_input,fidelity=tunnel._get_artifact_fidelity_map()) #, fidelity= tunnel._get_predicted_artifact_fidelity_map)
 
 	# Initialize frontier
 	frontier = Frontier()
@@ -65,7 +66,6 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 	# Get matrix of observed frontier values around wall-e and update observed map
 	observation = tunnel._get_observation(state)
 	wall_e.update_observed_map(observation, tunnel._observation_radius)
-
 	
 	# Runs until Wall-e runs out of budget or there are no frontiers left to explore
 	try:
@@ -79,7 +79,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 			if visualize:
 				# Update visualization
-				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), tunnel._get_predicted_artifact_fidelity_map())
+				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), tunnel._get_artifact_fidelity_map())
 
 			# Pick the next frontier and get a path to that point
 			path = frontier.get_next_frontier(state, wall_e._observed_map, wall_e._frontiers, value_dist)
@@ -111,8 +111,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 					if visualize:
 						graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation,
-												wall_e._get_explored_map(), tunnel._get_predicted_artifact_fidelity_map())
-
+												wall_e._get_explored_map(), tunnel._get_artifact_fidelity_map())
 					# Update the distance to the next point
 					distance = abs(wall_e._get_current_location()[0] - point[0]) + abs(wall_e._get_current_location()[1] - point[1])
 

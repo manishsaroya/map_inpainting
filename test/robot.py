@@ -14,12 +14,13 @@ import pdb
 
 class Robot:
 
-	def __init__(self, x_dim, y_dim, neural_input, artifact_fidility=None):
+	def __init__(self, x_dim, y_dim, neural_input, fidelity=None):
 		self._x_dim = x_dim
 		self._y_dim = y_dim
 		self._tunnel_grid = np.zeros((self._x_dim, self._y_dim))
 		# initializing explored map.
 		#pdb.set_trace()
+		# matrix containing fidility value at frontiers 
 		self._frontiers = np.zeros_like(self._tunnel_grid)
 		old_version = False
 		if old_version:
@@ -28,6 +29,7 @@ class Robot:
 		else:
 			for p in neural_input[3]:
 				self._frontiers[p[1],p[0]] = 1   # Note the transpose action
+			self._frontiers = self._frontiers * fidelity 
 			self._explored_map = np.transpose(neural_input[0]) - self._frontiers #np.zeros_like(self._tunnel_grid)
 			# Keeps track of fidelity values in spaces that have been observed but not explored
 			self._observed_map = np.transpose(neural_input[0]) #np.zeros_like(self._tunnel_grid)

@@ -11,6 +11,9 @@ import time
 import copy
 import pdb
 
+data_dir = "./for_test"
+#data_dir = "../synthetic_data/variable"
+
 def shutdown():
     print('\nGoodbye')
 
@@ -19,14 +22,14 @@ def get_prediction_and_ground_truth(grid_size):
             grid_size- size of data to be loaded
 
         Outputs: 
-            true_prediction: prediction not including previous explored area, usefull for conputing artifacts location 
+            true_prediction: prediction not including previous explored area, useful for computing artifacts location 
             ground_truth: ground truth  of the unexplored area.
     """
-    with open('../synthetic_data/variable/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
+    with open('{:s}/ground_truth_dataset_{:d}.pickle'.format(data_dir, grid_size),'rb') as tf:
         gt = pickle.load(tf)
     #with open('../synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
     #    masks = pickle.load(rf)
-    with open('../synthetic_data/variable/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
+    with open('{:s}/image_dataset_{:d}.pickle'.format(data_dir, grid_size),'rb') as f:
         images = pickle.load(f)
 
     true_prediction = []
@@ -39,13 +42,13 @@ def get_prediction_and_ground_truth(grid_size):
 
 def test_dataset(grid_size):
     """function to load the data in desired [img,mask,gt, frontier] list format"""
-    with open('../synthetic_data/variable/ground_truth_dataset_{}.pickle'.format(grid_size),'rb') as tf:
+    with open('{:s}/ground_truth_dataset_{:d}.pickle'.format(data_dir, grid_size),'rb') as tf:
         gt = pickle.load(tf)
-    with open('../synthetic_data/variable/mask_dataset_{}.pickle'.format(grid_size),'rb') as rf:
+    with open('{:s}/mask_dataset_{:d}.pickle'.format(data_dir, grid_size),'rb') as rf:
         masks = pickle.load(rf)
-    with open('../synthetic_data/variable/image_dataset_{}.pickle'.format(grid_size),'rb') as f:
+    with open('{:s}/image_dataset_{:d}.pickle'.format(data_dir, grid_size),'rb') as f:
         images = pickle.load(f)
-    with open('../synthetic_data/variable/frontier_dataset_{}.pickle'.format(grid_size),'rb') as f:
+    with open('{:s}/frontier_dataset_{:d}.pickle'.format(data_dir, grid_size),'rb') as f:
         frontiers = pickle.load(f)
     d = []
     for i in range(len(gt['test'])):
@@ -64,10 +67,10 @@ if __name__ == "__main__":
 
     grid_size = 24 # 16
     num_tunnel_files = 20
-    value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
+    #value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
     #value_distance = ['closest', 'normal']
-    #value_distance = ['normal']
-    visualize = False
+    value_distance = ['normal']
+    visualize = True
     true_prediction, ground_truth = get_prediction_and_ground_truth(grid_size)
     network_input = test_dataset(grid_size)
 
@@ -80,7 +83,7 @@ if __name__ == "__main__":
                 print("##################")
                 print("Tunnel {}".format(i))
                 #if i not in [0, 1, 7, 9, 10, 14, 16, 17]:
-                if i==21:
+                if i==0:
                     print("skipping tunnel")
                 else:
                     tunnel_file = ground_truth[i] #'./maps_{}/tunnel_{}.npy'.format(grid_size, i)

@@ -43,6 +43,10 @@ class Robot:
 		self._action_coords = [(0, -1), (1, 0), (0, 1), (-1, 0)]
 		self._reward = 0
 
+	def _recursive_prediction_update(self,fidelity):
+		#pdb.set_trace()
+		self._frontiers = (self._frontiers > 0) * fidelity
+
 	def _get_current_location(self):
 		# returns (x, y)
 		return self._current_position

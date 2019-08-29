@@ -39,7 +39,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 	x_dim, y_dim = tunnel._x_dim, tunnel._y_dim
 
 	steps = 0
-	budget = 400
+	budget = 500
 
 	# Store value at the start because it changes over time
 	num_artifacts = len(tunnel._updated_artifact_locations)
@@ -98,6 +98,12 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 					# Move robot and update world
 					state, reward_bool = tick(tunnel, wall_e, action)
 					steps += 1
+					if steps %10 ==9:
+						#update the network.
+						nth_prediction = int(steps/10)
+						tunnel._recursive_predict(wall_e._observed_map, wall_e._frontiers, nth_prediction=nth_prediction)
+						wall_e._recursive_prediction_update(tunnel._get_predicted_artifact_fidelity_map())
+						#print("recent predict")
 
 					if steps >= budget:
 						break

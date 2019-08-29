@@ -13,12 +13,16 @@ from torchvision import transforms
 import numpy 
 import sys 
 import matplotlib.pyplot as plt
-print(sys.path)
+#print(sys.path)
 sys.path.append('../')
+sys.path.append("../synthetic_data/")
+from mask_generation import Mask
+
 #from neural_network.artifact_prediction_cuda import Net
 from net import PConvUNet
 import opt
 from util.io import load_ckpt, get_state_dict_on_cpu
+import copy
 import pdb
 
 class Underground:
@@ -48,7 +52,27 @@ class Underground:
 		self._update_artifact_fidelity_map()
 		self._update_predicted_artifact_fidelity_map()
 
-	def run_network(self, model, dataset, device, if_save=False):
+	def _recursive_predict(self, observed_map, frontiers, nth_prediction=0):
+		# Tranpose action
+		image = numpy.transpose(numpy.float32(observed_map>0))
+		f_indices = numpy.nonzero(frontiers)
+		frontierVector = []
+		for i in range(len(f_indices[0])):
+			frontierVector.append([f_indices[1][i], f_indices[0][i]])  # Transpose action
+		mask = Mask()
+		mask.set_map(image, frontierVector)
+		masking = mask.get_adaptive_mask(mask.get_mask())
+		#pdb.set_trace()
+		self._neural_input[0] = numpy.float32(image)
+		self._neural_input[1] = numpy.float32(masking)
+		self._neural_input[3] = frontierVector
+
+		self._updated_predicted_artifact_locations = []
+		#pdb.set_trace()
+		self._predict_artifact(self._neural_input, nth_prediction=nth_prediction)
+		self._update_predicted_artifact_fidelity_map()
+
+	def run_network(self, model, dataset, device, if_save=False, nth_prediction=0):
 	    """ Input:
 	        model: network model.
 	        dataset: image, mask, gt, frontiers
@@ -57,14 +81,15 @@ class Underground:
 	        Output:
 	        prediction: just the prediction, does not include partial input explored area. 
 	    """
-	    image, mask, gt, frontiers = zip(*[dataset])
+	    #pdb.set_trace()
+	    image, mask, gt, frontierVector = dataset #zip(*[dataset])
 	    image  = torch.as_tensor(image)
 	    mask = torch.as_tensor(mask)
 	    gt = torch.as_tensor(gt)
 
-	    image = image.unsqueeze(0)
-	    mask = mask.unsqueeze(0)
-	    gt = gt.unsqueeze(0)
+	    image = image.unsqueeze(0).unsqueeze(0)
+	    mask = mask.unsqueeze(0).unsqueeze(0)
+	    gt = gt.unsqueeze(0).unsqueeze(0)
 
 	    with torch.no_grad():
 	        output, _ = model(image.to(device), mask.to(device))
@@ -81,10 +106,10 @@ class Underground:
 	    prediction = (a * abs(mask.numpy() - 1))
 
 	    if if_save== True:
-	    	self._save_output(gt,image,mask,output)
+	    	self._save_output(gt,image,mask,output, frontierVector, prediction, nth_prediction=nth_prediction)
 	    return prediction
 
-	def _predict_artifact(self, dataset_val):
+	def _predict_artifact(self, dataset_val, nth_prediction=0):
 		""" Input:
 				dataset_val: image, mask, gt, frontiers
 			Output: 
@@ -99,7 +124,7 @@ class Underground:
 		load_ckpt('../snapshots/toploss24variable/ckpt/500000.pth', [('model', model)])
 		model.eval()
 		# network output is just the prediction, does not include the input partial explored area. 
-		network_output = self.run_network(model, dataset_val, device,False)
+		network_output = self.run_network(model, dataset_val, device,if_save=True, nth_prediction=nth_prediction)
 
 		_predicted_artifact_locations = []
 		self._predicted_artifact_fidelity_map = numpy.zeros_like(self._tunnel_map)
@@ -215,7 +240,7 @@ class Underground:
 					self._current_observation[x][y] = 0
 		return self._current_observation
 
-	def _save_output(self, gt, image, mask,output):
+	def _save_output(self, gt, image, mask,output,frontierVector, prediction, nth_prediction=0):
 		fig = plt.figure(figsize=(15,10))
 
 		fig.add_subplot(2,3,1)
@@ -227,8 +252,11 @@ class Underground:
 		plt.title("Mask")
 
 		fig.add_subplot(2,3,2)
-		title = "70% explored Map"
-		plt.imshow(image.numpy())
+		title = "x% explored Map"
+		explored_map = copy.deepcopy(image)
+		for i in frontierVector:
+			explored_map[i[0]][i[1]] = 0.5
+		plt.imshow(explored_map.numpy())
 		plt.title(title)
 
 		fig.add_subplot(2,3,3)
@@ -249,8 +277,8 @@ class Underground:
 		plt.imshow(prediction > self._thresholding)
 		plt.title("Predicted Map")
 
-		plt.show()
-		plt.savefig("all_images.png")
+		#plt.show()
+		plt.savefig("./r_prediction/all_images{:d}.png".format(nth_prediction))
 
 
 	def _get_predicted_artifact_locations(self):

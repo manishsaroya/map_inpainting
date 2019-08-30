@@ -27,7 +27,7 @@ import pdb
 
 class Underground:
 
-	def __init__(self, grid_size, tunnel_filename, artifact_filename, neural_input):
+	def __init__(self, grid_size, tunnel_filename, artifact_filename, neural_input, value_dist):
 		# tunnel map is (y, x)
 		# partially explored initial map and mask is neural input.
 		self._neural_input = neural_input
@@ -52,10 +52,10 @@ class Underground:
 		self._update_artifact_fidelity_map()
 		self._update_predicted_artifact_fidelity_map()
 
-	def _recursive_predict(self, observed_map, frontiers, nth_prediction=0):
+	def _recursive_predict(self, observation_indicator, frontiers_indicator, nth_prediction=0):
 		# Tranpose action
-		image = numpy.transpose(numpy.float32(observed_map>0))
-		f_indices = numpy.nonzero(frontiers)
+		image = numpy.transpose(numpy.float32(observation_indicator))
+		f_indices = numpy.nonzero(frontiers_indicator)
 		frontierVector = []
 		for i in range(len(f_indices[0])):
 			frontierVector.append([f_indices[1][i], f_indices[0][i]])  # Transpose action
@@ -124,7 +124,7 @@ class Underground:
 		load_ckpt('../snapshots/toploss24variable/ckpt/500000.pth', [('model', model)])
 		model.eval()
 		# network output is just the prediction, does not include the input partial explored area. 
-		network_output = self.run_network(model, dataset_val, device,if_save=True, nth_prediction=nth_prediction)
+		network_output = self.run_network(model, dataset_val, device,if_save=False, nth_prediction=nth_prediction)
 
 		_predicted_artifact_locations = []
 		self._predicted_artifact_fidelity_map = numpy.zeros_like(self._tunnel_map)
@@ -174,6 +174,8 @@ class Underground:
 			for x in range(self._x_dim):
 				# self._artifact_fidelity_map[y][x] += (self._x_dim + self._y_dim) - (numpy.sqrt((y - artifact_y)**2 + (x - artifact_x)**2) + 1)
 				self._predicted_artifact_fidelity_map[y][x] += 5.0/(numpy.sqrt((y - artifact_y)**2 + (x - artifact_x)**2) + 1)
+				#self._predicted_artifact_fidelity_map[y][x] += 5.0/(((y - artifact_y)**2 + (x - artifact_x)**2) + 1)
+
 
 
 	def _add_artifact_fidelity(self, artifact_x, artifact_y):
@@ -181,6 +183,7 @@ class Underground:
 			for x in range(self._x_dim):
 				# self._artifact_fidelity_map[y][x] += (self._x_dim + self._y_dim) - (numpy.sqrt((y - artifact_y)**2 + (x - artifact_x)**2) + 1)
 				self._artifact_fidelity_map[y][x] += 5.0/(numpy.sqrt((y - artifact_y)**2 + (x - artifact_x)**2) + 1)
+				#self._artifact_fidelity_map[y][x] += 5.0/(((y - artifact_y)**2 + (x - artifact_x)**2) + 1)
 
 	def _check_state_in_tunnel(self, state):
 		""" Input: State 
@@ -229,6 +232,7 @@ class Underground:
 
 		# state and current observation are (x, y)
 		self._current_observation = numpy.zeros((self._observation_radius*2 + 1, self._observation_radius*2 + 1))
+		self._freespace_indicator = numpy.zeros((self._observation_radius*2 + 1, self._observation_radius*2 + 1))
 		for y in range(self._observation_radius*2 + 1):
 			for x in range(self._observation_radius*2 + 1):
 				_i_state = (state[0] + x - self._observation_radius, state[1] + y - self._observation_radius)
@@ -236,9 +240,12 @@ class Underground:
 					# Return the fidelity value at the observed points
 					# TODO
 					self._current_observation[x][y] = self._predicted_artifact_fidelity_map[_i_state[1]][_i_state[0]]
+					self._freespace_indicator[x][y] = 1
 				else:
 					self._current_observation[x][y] = 0
-		return self._current_observation
+					self._freespace_indicator[x][y] = 0
+
+		return self._current_observation, self._freespace_indicator
 
 	def _save_output(self, gt, image, mask,output,frontierVector, prediction, nth_prediction=0):
 		fig = plt.figure(figsize=(15,10))

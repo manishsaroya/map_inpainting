@@ -21,7 +21,7 @@ labels_in_short = ['Closest', 'Normal']
 labels_out_short = ['Closest First', 'Value / Distance']
 colors_short = ['darkorange', 'deepskyblue']
 
-with open('formatted_fast_toploss_score24.csv') as file:
+with open('formatted_fast_toploss_score24recursive.csv') as file:
 
     readCSV = csv.reader(file, delimiter=',')
     for row in readCSV:
@@ -32,8 +32,8 @@ with open('formatted_fast_toploss_score24.csv') as file:
 
 def make_plot(methods, labels_out, colors, name=None):
     # Counter provides x-labels
-    counter = range(399)
-
+    counter = range(499)
+    
     # For each method
     for k in range(len(methods)):
 

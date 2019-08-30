@@ -9,13 +9,14 @@ Author: Anna Nickelson
 import numpy as np
 import a_star
 from math import sqrt
+import matplotlib.pyplot as plt
 import pdb
 # This file has a class, but there is no need for that class, just a function would work perfectly fine.
 # To the best of my knowlege the get_next_frontier returns a path to the next best forntier based on some criterias,  
 class Frontier:
 
 
-    def get_next_frontier(self, current, observed_map, frontiers, value_dist):
+    def get_next_frontier(self, current, observed_map, frontiers, frontiers_indicator, value_dist):
         """ Input: 
             current: current position of the robot.
             observed_map: Ideal- a np arrat which informs whether the position is explored or not, 0 indicates unexplored.(Needs a fix)
@@ -32,7 +33,8 @@ class Frontier:
         paths = []
 
         # Find coordinates of each frontier
-        frontier_indices = np.array(np.nonzero(frontiers))
+        #frontier_indices = np.array(np.nonzero(frontiers))
+        frontier_indices = np.array(np.nonzero(frontiers_indicator))
 
         # Creates a list of current values of the frontiers.
         # This gets updated each time because frontier values change
@@ -76,9 +78,10 @@ class Frontier:
         # print("Frontier Values scaled", frontier_values)
         # random tie break
         #print("frontiers")
+        #pdb.set_trace()
         choice_index = np.random.choice(np.flatnonzero(np.array(frontier_values) == np.array(frontier_values).max()))
         #choice_index = frontier_values.index(np.amax(frontier_values))
-        #pdb.set_trace()
+        
         # print("Robot Position:", current)
         # print("Chosen path", paths[choice_index])
 

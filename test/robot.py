@@ -22,18 +22,22 @@ class Robot:
 		#pdb.set_trace()
 		# matrix containing fidility value at frontiers 
 		self._frontiers = np.zeros_like(self._tunnel_grid)
+		self._frontiers_indicator = np.zeros_like(self._tunnel_grid)
 		old_version = False
 		if old_version:
 			self._explored_map = np.zeros_like(self._tunnel_grid)
 			self._observed_map = np.zeros_like(self._tunnel_grid)
+			self._observation_indicator = np.zeros_like(self._tunnel_grid)
 		else:
 			for p in neural_input[3]:
 				self._frontiers[p[1],p[0]] = 1   # Note the transpose action
-			self._explored_map = np.transpose(neural_input[0]) - self._frontiers #np.zeros_like(self._tunnel_grid)
-			self._frontiers = self._frontiers * fidelity
+				self._frontiers_indicator[p[1],p[0]] = 1
+			self._explored_map = np.transpose(neural_input[0]) - self._frontiers_indicator #np.zeros_like(self._tunnel_grid)
+			self._frontiers = self._frontiers_indicator * fidelity
+			#self._frontiers = self._frontiers * fidelity
 			# Keeps track of fidelity values in spaces that have been observed but not explored
 			self._observed_map = np.transpose(neural_input[0]) #np.zeros_like(self._tunnel_grid)
-
+			self._observation_indicator = np.transpose(neural_input[0])
 		# Definition of entry point can be changed subject to map generation
 		# Note: state = (x,y)
 		self._current_position = [int(self._x_dim/2), 0]
@@ -45,7 +49,8 @@ class Robot:
 
 	def _recursive_prediction_update(self,fidelity):
 		#pdb.set_trace()
-		self._frontiers = (self._frontiers > 0) * fidelity
+		self._frontiers = self._frontiers_indicator * fidelity
+		#self._frontiers = (self._frontiers > 0) * fidelity
 
 	def _get_current_location(self):
 		# returns (x, y)
@@ -92,10 +97,11 @@ class Robot:
 			self._explored_map[self._current_position[0], self._current_position[1]] = 1
 			# Remove explored cells from the frontiers map
 			self._frontiers[self._current_position[0], self._current_position[1]] = 0
+			self._frontiers_indicator[self._current_position[0], self._current_position[1]] = 0
 
 	# Observed map keeps track of the observed areas
 	# Frontier map keeps track of areas that have been observed but not explored
-	def update_observed_map(self, observation, radius):
+	def update_observed_map(self, observation, freespace_indicator, radius):
 		state = self._get_current_location()
 		tunnel_grid_size = self._tunnel_grid.shape
 		for y in range(radius * 2 + 1):
@@ -116,9 +122,13 @@ class Robot:
 				# print("Observed Map", self._observed_map.shape)
 				# print("State x, state y", state_x, state_y)
 				self._observed_map[state_x][state_y] = observation[x][y]
+				if freespace_indicator[x][y]==1:
+					self._observation_indicator[state_x][state_y] = 1
 				# If the robot has not yet explored that area, add it to the observation map and frontiers map
 				if self._explored_map[state_x][state_y] == 0:
 					self._frontiers[state_x][state_y] = observation[x][y]
+					if freespace_indicator[x][y]==1:
+						self._frontiers_indicator[state_x][state_y] = 1
 
 	def _update_location(self, state):
 		self._current_position = state

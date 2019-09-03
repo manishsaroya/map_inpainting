@@ -21,7 +21,7 @@ import pdb
 
 ######## Parameters for generating the database #############
 GRID_SIZE = 24
-numPOI = 14
+numPOI = 40
 trainRatio = 0.8
 totalData = 30
 file_path = "./sample/"+ datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")+'/'
@@ -59,7 +59,7 @@ def generate(ratio,totalData,tpe):
 	frontierVectorData = []
 	for i in range(int(ratio * totalData)):
 		groundTruth = explore.generate_map()
-		percent_explored = np.random.uniform(0.2,0.8)
+		percent_explored = np.random.uniform(0.1,0.2)
 		percent_exploredData.append(percent_explored)
 		tunnelMap, frontierVector = explore.flood_fill_filter(percent_explored)
 		frontierVectorData.append(frontierVector)
@@ -68,9 +68,9 @@ def generate(ratio,totalData,tpe):
 		mask.set_map(tunnelMap, frontierVector)
 		masking = mask.get_mask()
         #store all the elements
-		groundTruth = groundTruth * np.logical_not(mask.get_adaptive_mask(masking)) + tunnelMap
-		explore.set_occupancy_map(groundTruth)
-		groundTruth, _ = explore.flood_fill_filter(1.0)
+		#groundTruth = groundTruth * np.logical_not(mask.get_adaptive_mask(masking)) + tunnelMap
+		#explore.set_occupancy_map(groundTruth)
+		#groundTruth, _ = explore.flood_fill_filter(1.0)
 
 		groundTruthData.append(np.float32(groundTruth))
 		tunnelMapData.append(np.float32(tunnelMap))

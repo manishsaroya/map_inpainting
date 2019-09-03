@@ -21,7 +21,7 @@ labels_in_short = ['Closest', 'Normal']
 labels_out_short = ['Closest First', 'Value / Distance']
 colors_short = ['darkorange', 'deepskyblue']
 
-with open('formatted_fast_toploss_score24recursive.csv') as file:
+with open('formatted_fast_toploss_scoredense24recursive.csv') as file:
 
     readCSV = csv.reader(file, delimiter=',')
     for row in readCSV:

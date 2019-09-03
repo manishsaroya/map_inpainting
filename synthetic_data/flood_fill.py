@@ -116,11 +116,13 @@ def nearestNeighbor(center, pts): #, forbidden):
     #nearestPoints.append(pts[np.argmin(distance)])
     distance = np.array(distance)
     #print(distance)
-    indices = distance.argsort()[:2]
+    indices = distance.argsort()[:3]
     #print indices
     nearestPoints.append(pts[indices[0]])
     if np.random.uniform(0,1) > 0.1 and len(indices)>=2:
         nearestPoints.append(pts[indices[1]])
+    if np.random.uniform(0,1) > 0.1 and len(indices)>=3:
+        nearestPoints.append(pts[indices[2]])
     return nearestPoints
 
 def manhattanDist(p1,p2):

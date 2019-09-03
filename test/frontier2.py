@@ -44,6 +44,7 @@ class Frontier:
                 path = np.array(a_star.getPath(observed_map, current, frontier_indices[:, i]))
             except KeyError:
                 print("Cannot find path to the goal frontier", frontier_indices[:, i])
+                pdb.set_trace()
             path = np.flip(path, 0)
             path_length = np.shape(path)[0]
 
@@ -55,7 +56,7 @@ class Frontier:
                 #print("path", path)
                 #print("current position", current)
                 #print("x,y of frontier:", frontier_indices[0,i], frontier_indices[1,i])
-                #pdb.set_trace()
+                #frontier_values.append(100 - (path_length - 1))
                 frontier_values.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]] / (path_length-1))
                 # print("Scaled frontier:", frontiers[frontier_indices[0, i]][frontier_indices[1, i]] / (path_length-1))
             elif value_dist == 'sqrt':
@@ -78,6 +79,19 @@ class Frontier:
         # print("Frontier Values scaled", frontier_values)
         # random tie break
         #print("frontiers")
+        #pdb.set_trace()
+        
+        # if value_dist=='normal':
+        # 	prediction_value = []
+        # 	if frontier_values.count(np.array(frontier_values).max())>=2:
+        # 		for i in np.flatnonzero(np.array(frontier_values) == np.array(frontier_values).max()):
+        # 			prediction_value.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
+        # 		#pdb.set_trace()
+        # 		choice_index = np.flatnonzero(np.array(frontier_values) == np.array(frontier_values).max())[prediction_value.index(np.amax(prediction_value))]
+        # 	else:
+        # 		choice_index = frontier_values.index(np.amax(frontier_values))
+        # elif value_dist=='closest':
+        # 	choice_index = np.random.choice(np.flatnonzero(np.array(frontier_values) == np.array(frontier_values).max()))
         #pdb.set_trace()
         choice_index = np.random.choice(np.flatnonzero(np.array(frontier_values) == np.array(frontier_values).max()))
         #choice_index = frontier_values.index(np.amax(frontier_values))

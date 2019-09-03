@@ -43,8 +43,13 @@ class Robot:
 		self._current_position = [int(self._x_dim/2), 0]
 		self._update_explored_map()
 		# Actions without a "none" option
+		#self._action_dict = {"up": 0, "right": 1, "down": 2, "left": 3, "down-right": 4, "down-left": 5, "up-right": 6, "up-left": 7}
+		#self._action_coords = [(0, -1), (1, 0), (0, 1), (-1, 0), (1, 1), (-1, 1), (1, -1), (-1, -1)]
+		#self._action_list = ["up", "right", "down", "left", "down-right", "down-left", "up-right", "up-left"]
+
 		self._action_dict = {"up": 0, "right": 1, "down": 2, "left": 3}
 		self._action_coords = [(0, -1), (1, 0), (0, 1), (-1, 0)]
+		self._action_list = ["up", "right", "down", "left"] 
 		self._reward = 0
 
 	def _recursive_prediction_update(self,fidelity):
@@ -63,21 +68,33 @@ class Robot:
 				select action according to goal from allowed_actions
 				# NOTE DOES NOT take in account the diagonal actions  
 		"""
-		if self._current_position[0] < goal[0] and "right" in allowed_actions:
-			return "right"
-		elif self._current_position[0] > goal[0] and "left" in allowed_actions:
-			return "left"
-		elif self._current_position[1] < goal[1] and "down" in allowed_actions:
-			return "down"
-		elif self._current_position[1] > goal[1] and "up" in allowed_actions:
-			return "up"
-		else:
+		#pdb.set_trace()
+		try:
+			action = self._action_coords.index(((goal-self._current_position)[0], (goal-self._current_position)[1]))
+			return self._action_list[action]
+		except ValueError:
 			# This breaks if there are no valid actions
 			print("Allowed actions", allowed_actions)
 			print("Robot position", self._current_position)
 			print("Goal:", goal)
 			print("SOMETHING HAS GONE TERRIBLY WRONG")
 			return False
+
+		# if self._current_position[0] < goal[0] and "right" in allowed_actions:
+		# 	return "right"
+		# elif self._current_position[0] > goal[0] and "left" in allowed_actions:
+		# 	return "left"
+		# elif self._current_position[1] < goal[1] and "down" in allowed_actions:
+		# 	return "down"
+		# elif self._current_position[1] > goal[1] and "up" in allowed_actions:
+		# 	return "up"
+		# else:
+		# 	# This breaks if there are no valid actions
+		# 	print("Allowed actions", allowed_actions)
+		# 	print("Robot position", self._current_position)
+		# 	print("Goal:", goal)
+		# 	print("SOMETHING HAS GONE TERRIBLY WRONG")
+		# 	return False
 
 	def _give_action(self, action):
 		# print(action)
@@ -129,6 +146,11 @@ class Robot:
 					self._frontiers[state_x][state_y] = observation[x][y]
 					if freespace_indicator[x][y]==1:
 						self._frontiers_indicator[state_x][state_y] = 1
+						#try:
+						#	self._action_coords.index(((np.array([state_x, state_y])-np.array(state))[0], (np.array([state_x, state_y])-np.array(state))[1]))
+						
+						#except ValueError:
+						#	self._frontiers_indicator[state_x][state_y] = 0
 
 	def _update_location(self, state):
 		self._current_position = state

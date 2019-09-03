@@ -32,7 +32,6 @@ def tick(tunnel, wall_e, action):
 
 def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 	# atexit.register(shutdown)
-
 	# Instantiate the environment
 	tunnel = Underground(GRID_SIZE, TUNNEL_FILE, ARTIFACT_FILE, neural_input, value_dist)
 	# print("Number of artifacts", len(tunnel._updated_artifact_locations))
@@ -50,7 +49,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 	# Introduce a robot, only one for now
 	#if value_dist == 'closest':
-	wall_e = Robot(x_dim, y_dim, neural_input,fidelity=tunnel._get_artifact_fidelity_map()) #, fidelity= tunnel._get_predicted_artifact_fidelity_map)
+	wall_e = Robot(x_dim, y_dim, neural_input,fidelity=tunnel._get_predicted_artifact_fidelity_map()) #, fidelity= tunnel._get_predicted_artifact_fidelity_map)
 
 	# Initialize frontier
 	frontier = Frontier()
@@ -62,7 +61,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 	# Set current state
 	state = wall_e._get_current_location()
-
+	#print("state", state)
 	# Get matrix of observed frontier values around wall-e and update observed map
 	observation, freespace_indicator = tunnel._get_observation(state)
 	wall_e.update_observed_map(observation, freespace_indicator, tunnel._observation_radius)
@@ -76,19 +75,20 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 			wall_e.update_observed_map(observation, freespace_indicator, tunnel._observation_radius)
 			# print("real artifacts\t: {}".format(len(tunnel._updated_artifact_locations)))
 			# print("predicted artifacts\t:{}".format(len(tunnel._updated_predicted_artifact_locations)))
-
-			if visualize:
-				# Update visualization
-				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), tunnel._get_predicted_artifact_fidelity_map())
-
-			# Pick the next frontier and get a path to that point
-			path = frontier.get_next_frontier(state, wall_e._observation_indicator, wall_e._frontiers, wall_e._frontiers_indicator, value_dist)
 			
 			# Recursive Prediction
 			if value_dist=='normal': 
 				nth_prediction = int(steps/10)
-				tunnel._recursive_predict(wall_e._observation_indicator, wall_e._frontiers_indicator, nth_prediction=nth_prediction)
+				tunnel._recursive_predict(wall_e._observation_indicator, wall_e._frontiers_indicator, state, nth_prediction=nth_prediction)
 				wall_e._recursive_prediction_update(tunnel._get_predicted_artifact_fidelity_map())
+
+			if visualize:
+				# Update visualization
+				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), tunnel.network_output) #_get_predicted_artifact_fidelity_map())
+
+			# Pick the next frontier and get a path to that point
+			path = frontier.get_next_frontier(state, wall_e._observation_indicator, tunnel._get_predicted_artifact_fidelity_map(), wall_e._frontiers_indicator, value_dist)
+			#path = frontier.get_next_frontier(state, wall_e._observation_indicator, wall_e._frontiers, wall_e._frontiers_indicator, value_dist)
 
 			# Loop through the path and update the robot at each step
 			for point in path:
@@ -124,7 +124,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 					if visualize:
 						graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation,
-												wall_e._get_explored_map(), tunnel._get_predicted_artifact_fidelity_map())
+												wall_e._get_explored_map(), tunnel.network_output) #_get_predicted_artifact_fidelity_map())
 					# Update the distance to the next point
 					distance = abs(wall_e._get_current_location()[0] - point[0]) + abs(wall_e._get_current_location()[1] - point[1])
 

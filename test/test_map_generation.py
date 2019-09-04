@@ -21,7 +21,7 @@ import os
 import pdb
 ######## Parameters for generating the database #############
 GRID_SIZE = 24
-numPOI = 35
+numPOI = 40
 trainRatio = 0
 totalData = 100
 validRatio = 0

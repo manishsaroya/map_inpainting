@@ -287,18 +287,23 @@ class Underground:
 		# state and current observation are (x, y)
 		self._current_observation = numpy.zeros((self._observation_radius*2 + 1, self._observation_radius*2 + 1))
 		self._freespace_indicator = numpy.zeros((self._observation_radius*2 + 1, self._observation_radius*2 + 1))
+		# update current state i.e. the center
+		self._current_observation[self._observation_radius][self._observation_radius] = self._predicted_artifact_fidelity_map[state[1]][state[0]]
+		self._freespace_indicator[self._observation_radius][self._observation_radius] = 1
+
 		for y in range(self._observation_radius*2 + 1):
 			for x in range(self._observation_radius*2 + 1):
 				_i_state = (state[0] + x - self._observation_radius, state[1] + y - self._observation_radius)
 				if self._check_state_in_tunnel(_i_state):
 					# Return the fidelity value at the observed points
 					# TODO
-					self._current_observation[x][y] = self._predicted_artifact_fidelity_map[_i_state[1]][_i_state[0]]
-					#try:
-					#self._action_coords.index(((numpy.array(_i_state)-numpy.array(state))[0], (numpy.array(_i_state)-numpy.array(state))[1]))
-					self._freespace_indicator[x][y] = 1
-					#except ValueError:
-					#	self._freespace_indicator[x][y] = 0
+					#self._current_observation[x][y] = self._predicted_artifact_fidelity_map[_i_state[1]][_i_state[0]]
+					try:
+						self._action_coords.index(((numpy.array(_i_state)-numpy.array(state))[0], (numpy.array(_i_state)-numpy.array(state))[1]))
+						self._freespace_indicator[x][y] = 1
+						self._current_observation[x][y] = self._predicted_artifact_fidelity_map[_i_state[1]][_i_state[0]]
+					except ValueError:
+						self._freespace_indicator[x][y] = 0
 				else:
 					self._current_observation[x][y] = 0
 					self._freespace_indicator[x][y] = 0

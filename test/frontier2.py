@@ -95,7 +95,7 @@ class Frontier:
         #pdb.set_trace()
         choice_index = np.random.choice(np.flatnonzero(np.array(frontier_values) == np.array(frontier_values).max()))
         #choice_index = frontier_values.index(np.amax(frontier_values))
-        
+        #pdb.set_trace()
         # print("Robot Position:", current)
         # print("Chosen path", paths[choice_index])
 

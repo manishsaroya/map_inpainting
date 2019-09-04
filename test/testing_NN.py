@@ -63,6 +63,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 	state = wall_e._get_current_location()
 	#print("state", state)
 	# Get matrix of observed frontier values around wall-e and update observed map
+
 	observation, freespace_indicator = tunnel._get_observation(state)
 	wall_e.update_observed_map(observation, freespace_indicator, tunnel._observation_radius)
 	
@@ -73,12 +74,13 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 			# Get matrix of observed frontier values around wall-e and update observed map
 			observation, freespace_indicator = tunnel._get_observation(state)
 			wall_e.update_observed_map(observation, freespace_indicator, tunnel._observation_radius)
+			#pdb.set_trace()
 			# print("real artifacts\t: {}".format(len(tunnel._updated_artifact_locations)))
 			# print("predicted artifacts\t:{}".format(len(tunnel._updated_predicted_artifact_locations)))
 			
 			# Recursive Prediction
 			if value_dist=='normal': 
-				nth_prediction = int(steps/10)
+				nth_prediction = 0 #int(steps/10)
 				tunnel._recursive_predict(wall_e._observation_indicator, wall_e._frontiers_indicator, state, nth_prediction=nth_prediction)
 				wall_e._recursive_prediction_update(tunnel._get_predicted_artifact_fidelity_map())
 
@@ -97,12 +99,6 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 				# While loop continues to move robot until point has been reached
 				while distance > 0:
-					# if steps %10 ==9:
-					# 	#update the network.
-					# 	nth_prediction = int(steps/10)
-					# 	tunnel._recursive_predict(wall_e._observation_indicator, wall_e._frontiers_indicator, nth_prediction=nth_prediction)
-					# 	wall_e._recursive_prediction_update(tunnel._get_predicted_artifact_fidelity_map())
-						#print("recent predict")
 
 					# Find allowed actions
 					allowed_actions = tunnel._get_allowed_actions(state)

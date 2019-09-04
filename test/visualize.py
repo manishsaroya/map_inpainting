@@ -20,6 +20,7 @@ class Visualize:
 		self.fig, self.ax = plt.subplots()
 		self.fig.set_size_inches(10,10)
 		self.fig.canvas.set_window_title("Sub-T Simulator")
+		self._action_coords = [(0, -1), (1, 0), (0, 1), (-1, 0)]
 
 	def _initialise_visualization(self, artifact_locations):
 		self._artifact_locations = artifact_locations
@@ -51,8 +52,12 @@ class Visualize:
 			for x in range(observation_radius*2 + 1):
 				_i_state = (robot_states[0] + x - observation_radius, robot_states[1] + y - observation_radius)
 				if self._check_state_in_tunnel(_i_state):
-					rect = patches.Rectangle((_i_state[0] - 0.5, _i_state[1] - 0.5), 1, 1, linewidth=1, edgecolor='g', facecolor='g')
-					self.ax.add_patch(rect)
+					try:
+						self._action_coords.index(((np.array(_i_state)-np.array(robot_states))[0], (np.array(_i_state)-np.array(robot_states))[1]))
+						rect = patches.Rectangle((_i_state[0] - 0.5, _i_state[1] - 0.5), 1, 1, linewidth=1, edgecolor='g', facecolor='g')
+						self.ax.add_patch(rect)
+					except ValueError:
+						pass
 
 		# Plot current robot locations
 		rect = patches.Rectangle((robot_states[0] - 0.5, robot_states[1] - 0.5), 1, 1, linewidth=2, edgecolor='c', facecolor='m')

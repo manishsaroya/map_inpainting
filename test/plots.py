@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import csv
+import pdb
 
 # Lists hold the mean and standard deviations for each time step for the five functions
 value = []

@@ -76,7 +76,7 @@ def getPath(grid, start, goal):
 
 # create random points of interests.
 def createPOI(numPoints, dimension):
-    subpoints = 5
+    subpoints = 10
     real_points = []
     pts = []
     while len(pts) < numPoints:
@@ -89,7 +89,7 @@ def createPOI(numPoints, dimension):
     for point in pts:
         x = np.arange(-24, 25)
         xU, xL = x + 0.5, x - 0.5 
-        prob = ss.norm.cdf(xU, scale = 3) - ss.norm.cdf(xL, scale = 3)
+        prob = ss.norm.cdf(xU, scale = 5) - ss.norm.cdf(xL, scale = 5)
         prob = prob / prob.sum() #normalize the probabilities so their sum is 1
         nums = np.random.choice(x, size = subpoints*2, p = prob)
         for j in range(subpoints):
@@ -134,7 +134,7 @@ def nearestNeighbor(center, pts): #, forbidden):
     indices = distance.argsort()[:2]
     #print indices
     nearestPoints.append(pts[indices[0]])
-    if np.random.uniform(0,1) > 0.1 and len(indices)>=2:
+    if np.random.uniform(0,1) > 0.4 and len(indices)>=2:
         nearestPoints.append(pts[indices[1]])
     #if np.random.uniform(0,1) > 0.1 and len(indices)>=3:
     #    nearestPoints.append(pts[indices[2]])

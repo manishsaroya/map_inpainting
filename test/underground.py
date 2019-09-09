@@ -263,19 +263,32 @@ class Underground:
 
 	def _found_artifact(self, state):
 		""" Input: state of the robot
-			Output: remove visited artifact from the predicted count. 
+			Output: remove visited artifact from the predicted count.
+					returns the list of bool values for artifacts found. 
 		"""
-		if self._updated_predicted_artifact_locations.count(state):
-			self._updated_predicted_artifact_locations.remove(state)
-			#self._update_predicted_artifact_fidelity_map()
-			# removing this for now but its good for visualization
-		if self._updated_artifact_locations.count(state):
-			self._updated_artifact_locations.remove(state)
-			self._update_artifact_fidelity_map()
-			# print('Artifact found at: {}'.format(state))
-			return True
-		else:
-			return False
+		found_list = []
+		_ , freespace = self._get_observation(state)
+
+		for y in range(self._observation_radius*2 + 1):
+			for x in range(self._observation_radius*2 + 1):
+				_i_state = (state[0] + x - self._observation_radius, state[1] + y - self._observation_radius)
+				if freespace[x][y]==1:
+					if self._updated_predicted_artifact_locations.count(_i_state):
+						self._updated_predicted_artifact_locations.remove(_i_state)
+						#self._update_predicted_artifact_fidelity_map()
+						# removing this for now but its good for visualization
+					if self._updated_artifact_locations.count(_i_state):
+						self._updated_artifact_locations.remove(_i_state)
+						self._update_artifact_fidelity_map()
+						# print('Artifact found at: {}'.format(state))
+						found_list.append(True)
+						#return True
+					else:
+						found_list.append(False)
+				else:
+					found_list.append(False)
+						#return False
+		return found_list
 
 	def _get_observation(self, state):
 		""" Input: (state): position of the robot. 

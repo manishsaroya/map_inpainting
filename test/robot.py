@@ -160,7 +160,7 @@ class Robot:
 	def _update_reward(self, found_artifact):
 		if found_artifact:
 			self._reward += 100
-			return True
+			#return True
 		else:
 			self._reward -= 1
-			return False
+			#return False

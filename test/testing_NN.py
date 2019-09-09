@@ -26,8 +26,11 @@ def shutdown():
 def tick(tunnel, wall_e, action):
 	wall_e._give_action(action)
 	state = wall_e._get_current_location()
-	reward = wall_e._update_reward(tunnel._found_artifact(state))
-	return state, reward
+	rewards_bool_list = tunnel._found_artifact(state)
+	for i in rewards_bool_list:
+		#wall_e._update_reward(tunnel._found_artifact(state))
+		wall_e._update_reward(i)
+	return state, rewards_bool_list
 
 
 def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
@@ -115,8 +118,9 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 						break
 
 					# If a POI was found, mark the time step
-					if reward_bool:
-						points_found.append(steps)
+					for i in reward_bool:
+						if i:
+							points_found.append(steps)
 
 					# Normalizes to be percent of total artifacts found
 					score_list[steps - 1] = len(points_found) / num_artifacts

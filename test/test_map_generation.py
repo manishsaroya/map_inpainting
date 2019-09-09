@@ -21,7 +21,7 @@ import os
 import pdb
 ######## Parameters for generating the database #############
 GRID_SIZE = 24
-numPOI = 40
+numPOI = 14
 trainRatio = 0
 totalData = 100
 validRatio = 0
@@ -30,7 +30,7 @@ testRatio = 1
 
 ######### Exploration Parameters #############
 filterRatio = 0.7
-data_dir = "./for_test_more_connection"
+data_dir = "./for_test_gaussian"
 ##############################################
 
 if not os.path.exists(data_dir):

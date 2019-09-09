@@ -9,6 +9,7 @@ DARPA SubT Challenge
 import matplotlib.pyplot as plt
 import numpy as np
 import heapq
+import scipy.stats as ss
 #import random
 
 #GRID_SIZE = 16
@@ -75,12 +76,26 @@ def getPath(grid, start, goal):
 
 # create random points of interests.
 def createPOI(numPoints, dimension):
+    subpoints = 5
+    real_points = []
     pts = []
     while len(pts) < numPoints:
         point = [np.random.randint(0, dimension[0]), np.random.randint(0, dimension[1])]
         if point not in pts:
             pts.append(point)
-    return pts
+
+    print(pts)
+
+    for point in pts:
+        x = np.arange(-24, 25)
+        xU, xL = x + 0.5, x - 0.5 
+        prob = ss.norm.cdf(xU, scale = 3) - ss.norm.cdf(xL, scale = 3)
+        prob = prob / prob.sum() #normalize the probabilities so their sum is 1
+        nums = np.random.choice(x, size = subpoints*2, p = prob)
+        for j in range(subpoints):
+            if 0 <= nums[j]+point[0] < dimension[0] and 0 <= nums[j+subpoints]+point[1] < dimension[1]:
+                real_points.append([nums[j]+point[0], nums[j+subpoints]+point[1]])
+    return real_points
 
 
 def connectGrid(pts, grid):
@@ -116,13 +131,13 @@ def nearestNeighbor(center, pts): #, forbidden):
     #nearestPoints.append(pts[np.argmin(distance)])
     distance = np.array(distance)
     #print(distance)
-    indices = distance.argsort()[:3]
+    indices = distance.argsort()[:2]
     #print indices
     nearestPoints.append(pts[indices[0]])
     if np.random.uniform(0,1) > 0.1 and len(indices)>=2:
         nearestPoints.append(pts[indices[1]])
-    if np.random.uniform(0,1) > 0.1 and len(indices)>=3:
-        nearestPoints.append(pts[indices[2]])
+    #if np.random.uniform(0,1) > 0.1 and len(indices)>=3:
+    #    nearestPoints.append(pts[indices[2]])
     return nearestPoints
 
 def manhattanDist(p1,p2):

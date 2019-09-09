@@ -22,7 +22,7 @@ labels_in_short = ['Closest', 'Normal']
 labels_out_short = ['Closest First', 'Value / Distance']
 colors_short = ['darkorange', 'deepskyblue']
 
-with open('formatted_fast_24recursive.csv') as file:
+with open('formatted_gaussian_24recursive.csv') as file:
 
     readCSV = csv.reader(file, delimiter=',')
     for row in readCSV:
@@ -33,7 +33,7 @@ with open('formatted_fast_24recursive.csv') as file:
 
 def make_plot(methods, labels_out, colors, name=None):
     # Counter provides x-labels
-    counter = range(204)
+    counter = range(499)
     
     # For each method
     for k in range(len(methods)):
@@ -77,5 +77,5 @@ def make_plot(methods, labels_out, colors, name=None):
 
 
 if __name__ == "__main__":
-    make_plot(methods_short, labels_out_short, colors_short, 'Percent_found_two_variable1_24.png')
+    make_plot(methods_short, labels_out_short, colors_short, 'Percent_gaussian_24.png')
     #make_plot(methods_long, labels_out_long, colors_long, 'Percent_found_all.png')

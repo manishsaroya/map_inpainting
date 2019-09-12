@@ -10,6 +10,7 @@ Author: Abhijeet Agnihotri
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
+import pdb
 
 
 class Visualize:
@@ -36,12 +37,16 @@ class Visualize:
 		else:
 			return self._tunnel_map[state[1]][state[0]]
 
-	def _keep_visualizing(self, robot_states, updated_artifact_locations, current_observation, explored_map, fidelity_map):
+	def _keep_visualizing(self, robot_states, updated_artifact_locations, current_observation, explored_map, fidelity_map,frontiers_indicator):
 		# TODO: Adapt for multiple robots
 		self._artifact_locations = updated_artifact_locations
 		self.ax.cla()
 		self.ax.imshow(self._tunnel_map, cmap=plt.get_cmap('bone'))
+
+		#plt.imshow(frontier_indicator-0.5)
+		#plt.pause(0.0001)
 		observation_radius = len(current_observation[0])//2
+		#pdb.set_trace()
 
 		if len(self._artifact_locations) > 0:
 			# Draw heat map
@@ -66,6 +71,15 @@ class Visualize:
 		# Plot artifact locations
 		for artifact in self._artifact_locations:
 			rect = patches.Rectangle((artifact[0] - 0.5, artifact[1] - 0.5), 1, 1, linewidth=2, edgecolor='b', hatch='x', facecolor='none')
+			self.ax.add_patch(rect)
+
+		# Plot frontier locations
+		f_indices = np.nonzero(frontiers_indicator)
+		frontierVector = []
+		for i in range(len(f_indices[0])):
+			frontierVector.append([f_indices[0][i], f_indices[1][i]])
+		for f in frontierVector:
+			rect = patches.Rectangle((f[0] - 0.5, f[1] - 0.5), 1, 1, linewidth=2, edgecolor='b', hatch='*', facecolor='Orange')
 			self.ax.add_patch(rect)
 
 		# Plot explored map

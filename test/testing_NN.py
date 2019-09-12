@@ -92,7 +92,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 				predicted_artifacts = np.zeros_like(tunnel._tunnel_map)
 				for p in tunnel._get_predicted_artifact_locations():
 					predicted_artifacts[p[1],p[0]] = 1 # Note the transpose action
-				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts)
+				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator)
 
 			# Pick the next frontier and get a path to that point
 			path = frontier.get_next_frontier(state, wall_e._observation_indicator, tunnel._get_predicted_artifact_fidelity_map(), wall_e._frontiers_indicator, value_dist)
@@ -130,7 +130,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 						for p in tunnel._get_predicted_artifact_locations():
 							predicted_artifacts[p[1],p[0]] = 1 # Note the transpose action
 						graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation,
-												wall_e._get_explored_map(), predicted_artifacts)
+												wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator)
 					# Update the distance to the next point
 					distance = abs(wall_e._get_current_location()[0] - point[0]) + abs(wall_e._get_current_location()[1] - point[1])
 

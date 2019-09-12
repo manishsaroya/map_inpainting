@@ -21,7 +21,7 @@ import pdb
 
 ######## Parameters for generating the database #############
 GRID_SIZE = 24
-numPOI = 14
+numPOI = 4
 trainRatio = 0.8
 totalData = 30
 file_path = "./sample/"+ datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")+'/'

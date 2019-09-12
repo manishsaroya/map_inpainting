@@ -107,24 +107,24 @@ class Underground:
 	    mask = mask.unsqueeze(0).unsqueeze(0)
 	    gt = gt.unsqueeze(0).unsqueeze(0)
 
-	    #with torch.no_grad():
-	    #    output, _ = model(image.to(device), mask.to(device))
-	    #output = output.to(torch.device('cpu'))
+	    with torch.no_grad():
+	        output, _ = model(image.to(device), mask.to(device))
+	    output = output.to(torch.device('cpu'))
 
-	    #output_comp = mask * image + (1 - mask) * output
+	    output_comp = mask * image + (1 - mask) * output
 
 	    image = image[0][0]
 	    gt = gt[0][0]
 	    mask = mask[0][0]
-	    #output = output[0][0]
+	    output = output[0][0]
 
-	    #a = 1.0/(1.0 + numpy.exp(-output.numpy()))
-	    #prediction = (a * abs(mask.numpy() - 1))
+	    a = 1.0/(1.0 + numpy.exp(-output.numpy()))
+	    prediction = (a * abs(mask.numpy() - 1))
 	    
 	    ################## To be changed ###################
-	    prediction = gt - image
-	    for p in frontierVector:
-	        prediction[p[0],p[1]] = 1.0
+	    #prediction = gt - image
+	    #for p in frontierVector:
+	    #    prediction[p[0],p[1]] = 1.0
 	    ####################################################
 	    if if_save== True:
 	    	self._save_output(gt,image,mask,output, frontierVector, prediction, nth_prediction=nth_prediction)

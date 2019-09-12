@@ -33,7 +33,7 @@ with open('formatted_gaussian_24recursive.csv') as file:
 
 def make_plot(methods, labels_out, colors, name=None):
     # Counter provides x-labels
-    counter = range(499)
+    counter = range(273)
     
     # For each method
     for k in range(len(methods)):

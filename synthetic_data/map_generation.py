@@ -18,16 +18,16 @@ import os
 import pdb
 ######## Parameters for generating the database #############
 GRID_SIZE = 24
-numPOI = 14
-trainRatio = 0
-totalData = 100
-validRatio = 0
-testRatio = 1
+numPOI = 5
+trainRatio = 0.8
+totalData = 50000
+validRatio = 0.1
+testRatio = 0.1
 #############################################################
 
 ######### Exploration Parameters #############
 filterRatio = 0.7
-data_dir = "./variable"
+data_dir = "./gaussian"
 ##############################################
 
 if not os.path.exists(data_dir):
@@ -64,7 +64,7 @@ def generate(ratio,totalData,tpe):
 		# generate a map 
 		groundTruth = explore.generate_map()
 		# randomly select percent_explored
-		percent_explored = np.random.uniform(0.2,0.8)
+		percent_explored = np.random.uniform(0.1,0.70)
 		# get percent explored map which will be image or network input later on
 		tunnelMap, frontierVector = explore.flood_fill_filter(percent_explored)
 		frontierVectorData.append(frontierVector)

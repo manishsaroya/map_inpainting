@@ -76,7 +76,7 @@ def getPath(grid, start, goal):
 
 # create random points of interests.
 def createPOI(numPoints, dimension):
-    subpoints = 10
+    subpoints = 8
     real_points = []
     pts = []
     while len(pts) < numPoints:

@@ -66,18 +66,18 @@ def convert(image):
 if __name__ == "__main__":
 
     grid_size = 24 # 16
-    num_tunnel_files = 15
+    num_tunnel_files = 28
     #value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
-    value_distance = ['closest', 'normal']
-    #value_distance = ['normal']
-    #value_distance = ['closest']
-    visualize = False
+    #value_distance = ['quarter','closest', 'normal']
+    value_distance = ['normal']
+    #value_distance = ['quarter']
+    visualize = True
     true_prediction, ground_truth = get_prediction_and_ground_truth(grid_size)
     network_input = test_dataset(grid_size)
 
     try:
         print('Started exploring\n')
-        with open('fast_wednesday_gaussian{}.csv'.format(grid_size), mode='w') as experiments:
+        with open('video_normal_gaussian{}.csv'.format(grid_size), mode='w') as experiments:
             experiment_writer = csv.writer(experiments, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             for i in range(1, num_tunnel_files):
                 # print('')

@@ -3,13 +3,14 @@ import csv
 from numpy import concatenate
 import pdb
 content = []
-elements = 2
+elements = 1
 
 #explore_type = ['Value', 'Quarter', 'Closest', 'Square_root','Normal']
 # keep the same order as experiment.py
-explore_type = ['Closest', 'Normal']
+#explore_type = ['Quarter','Closest', 'Normal']
+explore_type = ['Quarter']
 
-with open('fast_wednesday_gaussian24.csv') as file:
+with open('quarter_gaussian24.csv') as file:
 	readCSV = csv.reader(file, delimiter=',')
 	print(readCSV)
 	for row in readCSV:
@@ -38,7 +39,7 @@ for i in content:
 		std_list[v].append(np.std(values[v]))
 
 
-with open('formatted_wednesday_gaussian_24recursive.csv', mode='w') as file:
+with open('formatted_quarter_gaussian_24recursive.csv', mode='w') as file:
 	format_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	for x in range(len(mean_list)):
 		to_write = concatenate([[explore_type[x]],['Mean'], mean_list[x]])

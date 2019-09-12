@@ -31,7 +31,7 @@ class Frontier:
         frontier_values = []
         fronts = []
         paths = []
-        closest_frontier_value = []
+        #closest_frontier_value = []
         # Find coordinates of each frontier
         #frontier_indices = np.array(np.nonzero(frontiers))
         frontier_indices = np.array(np.nonzero(frontiers_indicator))
@@ -58,7 +58,7 @@ class Frontier:
                 #print("x,y of frontier:", frontier_indices[0,i], frontier_indices[1,i])
                 #frontier_values.append(100 - (path_length - 1))
                 frontier_values.append((frontiers[frontier_indices[0, i]][frontier_indices[1, i]]+0.5) / (path_length-1))
-                closest_frontier_value.append(100 - (path_length - 1))
+                #closest_frontier_value.append(100 - (path_length - 1))
                 # print("Scaled frontier:", frontiers[frontier_indices[0, i]][frontier_indices[1, i]] / (path_length-1))
             elif value_dist == 'sqrt':
                 #fronts.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
@@ -68,7 +68,7 @@ class Frontier:
                 frontier_values.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
             elif value_dist == 'quarter':
                 #fronts.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
-                frontier_values.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]] / (path_length - 1)**(2)) # TODO: change back to 1/4
+                frontier_values.append((frontiers[frontier_indices[0, i]][frontier_indices[1, i]]+0.5) / (path_length-1)) # TODO: change back to 1/4
             elif value_dist == 'closest':
                 #fronts.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
                 frontier_values.append(100 - (path_length - 1))
@@ -94,10 +94,10 @@ class Frontier:
         # elif value_dist=='closest':
         # 	choice_index = np.random.choice(np.flatnonzero(np.array(frontier_values) == np.array(frontier_values).max()))
         #pdb.set_trace()
-        if np.array(frontier_values).max()!=0:
-        	choice_index = np.random.choice(np.flatnonzero(np.array(frontier_values) == np.array(frontier_values).max()))
-        else:
-        	choice_index = np.random.choice(np.flatnonzero(np.array(closest_frontier_value) == np.array(closest_frontier_value).max()))
+        #if np.array(frontier_values).max()!=0:
+        choice_index = np.random.choice(np.flatnonzero(np.array(frontier_values) == np.array(frontier_values).max()))
+        #else:
+        #	choice_index = np.random.choice(np.flatnonzero(np.array(closest_frontier_value) == np.array(closest_frontier_value).max()))
         #choice_index = frontier_values.index(np.amax(frontier_values))
         #pdb.set_trace()
         # print("Robot Position:", current)

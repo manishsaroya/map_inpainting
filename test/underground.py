@@ -63,9 +63,9 @@ class Underground:
 		ft = numpy.zeros((self._x_dim, self._y_dim))
 		for p in neural_input[3]:
 			ft[p[1],p[0]] = 1   # Note the transpose action
-		self._recursive_predict(ob, ft, [int(self._x_dim/2), 0])
+		self._recursive_predict(ob, ft, [int(self._x_dim/2), 0], value_dist)
 
-	def _recursive_predict(self, observation_indicator, frontiers_indicator, state, nth_prediction=0):
+	def _recursive_predict(self, observation_indicator, frontiers_indicator, state, value_dist, nth_prediction=0):
 		# Tranpose action
 		image = numpy.transpose(numpy.float32(observation_indicator))
 		f_indices = numpy.nonzero(frontiers_indicator)
@@ -82,11 +82,11 @@ class Underground:
 
 		self._updated_predicted_artifact_locations = []
 		#pdb.set_trace()
-		self._predict_artifact(self._neural_input, nth_prediction=nth_prediction)
+		self._predict_artifact(self._neural_input, value_dist, nth_prediction=nth_prediction)
 		self._connected_fidelity_map(observation_indicator, frontiers_indicator, state)
 		#self._update_predicted_artifact_fidelity_map()
 
-	def run_network(self, model, dataset, device, if_save=False, nth_prediction=0):
+	def run_network(self, model, dataset, device, value_dist, if_save=False, nth_prediction=0):
 	    """ Input:
 	        model: network model.
 	        dataset: image, mask, gt, frontiers
@@ -122,15 +122,16 @@ class Underground:
 	    prediction = (a * abs(mask.numpy() - 1))
 	    
 	    ################## To be changed ###################
-	    #prediction = gt - image
-	    #for p in frontierVector:
-	    #    prediction[p[0],p[1]] = 1.0
+	    if value_dist=='quarter':
+	        prediction = gt - image
+	        for p in frontierVector:
+	           prediction[p[0],p[1]] = 1.0
 	    ####################################################
 	    if if_save== True:
 	    	self._save_output(gt,image,mask,output, frontierVector, prediction, nth_prediction=nth_prediction)
 	    return prediction
 
-	def _predict_artifact(self, dataset_val, nth_prediction=0):
+	def _predict_artifact(self, dataset_val, value_dist, nth_prediction=0):
 		""" Input:
 				dataset_val: image, mask, gt, frontiers
 			Output: 
@@ -142,10 +143,10 @@ class Underground:
 
 		model = PConvUNet(layer_size=3, input_channels=1).to(device)
 		#pdb.set_trace()
-		load_ckpt('../snapshots/toploss24variable/ckpt/500000.pth', [('model', model)])
+		load_ckpt('../snapshots/gaussian/ckpt/1000000.pth', [('model', model)])
 		model.eval()
 		# network output is just the prediction, does not include the input partial explored area. 
-		self.network_output = self.run_network(model, dataset_val, device,if_save=False, nth_prediction=nth_prediction)
+		self.network_output = self.run_network(model, dataset_val, device,value_dist,if_save=False, nth_prediction=nth_prediction)
 
 		_predicted_artifact_locations = []
 		self._predicted_artifact_fidelity_map = numpy.zeros_like(self._tunnel_map)

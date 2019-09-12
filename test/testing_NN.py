@@ -82,9 +82,9 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 			# print("predicted artifacts\t:{}".format(len(tunnel._updated_predicted_artifact_locations)))
 			
 			# Recursive Prediction
-			if value_dist=='normal': 
+			if value_dist=='normal' or value_dist=='quarter': 
 				nth_prediction = 0 #int(steps/10)
-				tunnel._recursive_predict(wall_e._observation_indicator, wall_e._frontiers_indicator, state, nth_prediction=nth_prediction)
+				tunnel._recursive_predict(wall_e._observation_indicator, wall_e._frontiers_indicator, state, value_dist, nth_prediction=nth_prediction)
 				wall_e._recursive_prediction_update(tunnel._get_predicted_artifact_fidelity_map())
 
 			if visualize:

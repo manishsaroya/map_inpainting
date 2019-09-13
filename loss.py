@@ -33,7 +33,7 @@ class InpaintingLoss(nn.Module):
         loss_dict['hole'] = self.l1((1 - mask) * output, (1 - mask) * gt)
         loss_dict['valid'] = self.l1(mask * output, mask * gt)
         #pdb.set_trace()
-        loss_dict['toploss'] = self.tloss(output.cpu(), gt.cpu(), z.cpu(),f.cpu()).cuda()
+        #loss_dict['toploss'] = self.tloss(output.cpu(), gt.cpu(), z.cpu(),f.cpu()).cuda()
 
         if output.shape[1] == 3:
             feat_output_comp = self.extractor(output_comp)

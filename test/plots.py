@@ -17,17 +17,27 @@ labels_out_long = ['Closest First', 'Value / Distance', 'Value / sqrt(Distance)'
 colors_long = ['darkorange', 'deepskyblue', 'b', 'g', 'mediumorchid']
 
 # List of lists, labels to read the file, labels for the plot, and colors for only the closest and normal methods
-methods_short = [quarter, closest, normal]
-labels_in_short = ['Quarter','Closest', 'Normal']
-labels_out_short = ['Ground Truth Prediction','Closest First', 'Value / Distance(Network_prediction)']
-colors_short = ['mediumorchid','darkorange', 'deepskyblue']
+#methods_short = [quarter, closest, normal]
+#labels_in_short = ['Quarter','Closest', 'Normal']
+#labels_out_short = ['Ground Truth Prediction','Closest First', 'Value / Distance(Network_prediction)']
+#colors_short = ['mediumorchid','darkorange', 'deepskyblue']
 
-#methods_short = [closest, normal]
-#labels_in_short = ['Closest', 'Normal']
-#labels_out_short = ['Closest First', 'Value / Distance(Network_prediction)']
-#colors_short = ['darkorange', 'deepskyblue']
+# methods_short = [closest, normal]
+# labels_in_short = ['Closest', 'Normal']
+# labels_out_short = ['Closest First', 'Value / Distance(Network_prediction)']
+# colors_short = ['darkorange', 'deepskyblue']
 
-with open('formatted_quarter_gaussian_24recursive.csv') as file:
+# methods_short = [normal,sqrt]
+# labels_in_short = ['Normal','Square_root']
+# labels_out_short = ['Toploss', 'without top loss']
+# colors_short = ['darkorange', 'deepskyblue']
+
+methods_short = [quarter, closest,  sqrt, normal]
+labels_in_short = ['Quarter','Closest', 'Square_root', 'Normal']
+labels_out_short = ['Ground Truth', 'Closest First', 'Without toploss', 'With toploss']
+colors_short = ['darkorange', 'deepskyblue', 'b', 'g']
+
+with open('formatted_without_toploss_long_gaussian_24recursive.csv') as file:
 
     readCSV = csv.reader(file, delimiter=',')
     for row in readCSV:
@@ -38,7 +48,7 @@ with open('formatted_quarter_gaussian_24recursive.csv') as file:
 
 def make_plot(methods, labels_out, colors, name=None):
     # Counter provides x-labels
-    counter = range(301)
+    counter = range(286)
     
     # For each method
     for k in range(len(methods)):
@@ -85,5 +95,5 @@ def make_plot(methods, labels_out, colors, name=None):
 
 
 if __name__ == "__main__":
-    make_plot(methods_short, labels_out_short, colors_short, 'Percent_quarter_gaussian_24.png')
+    make_plot(methods_short, labels_out_short, colors_short, 'Percent_without_toploss_long_gaussian_24.png')
     #make_plot(methods_long, labels_out_long, colors_long, 'Percent_found_all.png')

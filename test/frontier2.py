@@ -62,7 +62,7 @@ class Frontier:
                 # print("Scaled frontier:", frontiers[frontier_indices[0, i]][frontier_indices[1, i]] / (path_length-1))
             elif value_dist == 'sqrt':
                 #fronts.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
-                frontier_values.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]] / sqrt(path_length-1))
+                frontier_values.append((frontiers[frontier_indices[0, i]][frontier_indices[1, i]]+0.5) / (path_length-1))
             elif value_dist == 'value':
                 #fronts.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
                 frontier_values.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])

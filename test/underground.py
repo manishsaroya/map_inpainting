@@ -143,7 +143,10 @@ class Underground:
 
 		model = PConvUNet(layer_size=3, input_channels=1).to(device)
 		#pdb.set_trace()
-		load_ckpt('../snapshots/gaussian/ckpt/1000000.pth', [('model', model)])
+		if value_dist=="normal":
+			load_ckpt('../snapshots/gaussian/ckpt/1000000.pth', [('model', model)])
+		else:
+			load_ckpt('../snapshots/plain/ckpt/1000000.pth', [('model', model)])
 		model.eval()
 		# network output is just the prediction, does not include the input partial explored area. 
 		self.network_output = self.run_network(model, dataset_val, device,value_dist,if_save=False, nth_prediction=nth_prediction)

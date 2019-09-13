@@ -66,20 +66,20 @@ def convert(image):
 if __name__ == "__main__":
 
     grid_size = 24 # 16
-    num_tunnel_files = 28
+    num_tunnel_files = 100
     #value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
     #value_distance = ['quarter','closest', 'normal']
-    value_distance = ['normal']
+    value_distance = ['quarter','closest','sqrt','normal']    # sqrt== without toploss network, normal= toploss network prediction, quarter== ground truth prediction
     #value_distance = ['quarter']
-    visualize = True
+    visualize = False
     true_prediction, ground_truth = get_prediction_and_ground_truth(grid_size)
     network_input = test_dataset(grid_size)
 
     try:
         print('Started exploring\n')
-        with open('video_normal_gaussian{}.csv'.format(grid_size), mode='w') as experiments:
+        with open('without_toploss_gaussian{}.csv'.format(grid_size), mode='w') as experiments:
             experiment_writer = csv.writer(experiments, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            for i in range(1, num_tunnel_files):
+            for i in range(0, num_tunnel_files):
                 # print('')
                 print("##################")
                 print("Tunnel {}".format(i))

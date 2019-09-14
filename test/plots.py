@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import csv
 import pdb
-
+import matplotlib.ticker as ticker
 # Lists hold the mean and standard deviations for each time step for the five functions
 value = []
 quarter = []
@@ -34,7 +34,7 @@ colors_long = ['darkorange', 'deepskyblue', 'b', 'g', 'mediumorchid']
 
 methods_short = [quarter, closest,  sqrt, normal]
 labels_in_short = ['Quarter','Closest', 'Square_root', 'Normal']
-labels_out_short = ['Ground Truth', 'Closest First', 'Without toploss', 'With toploss']
+labels_out_short = ['Oracle', 'Closest first', 'Without topological loss', 'Topological loss']
 colors_short = ['darkorange', 'deepskyblue', 'b', 'g']
 
 with open('formatted_without_toploss_long_gaussian_24recursive.csv') as file:
@@ -43,13 +43,14 @@ with open('formatted_without_toploss_long_gaussian_24recursive.csv') as file:
     for row in readCSV:
         for i in range(len(methods_long)):
             if row[0] == labels_in_long[i]:
-                methods_long[i].append(row[2:])
+                methods_long[i].append(row[27:])
 
 
 def make_plot(methods, labels_out, colors, name=None):
     # Counter provides x-labels
-    counter = range(286)
-    
+    counter = range(474)
+    #fig, ax = plt.subplots(figsize=(7,7))
+    plt.figure(figsize=(5,4))
     # For each method
     for k in range(len(methods)):
 
@@ -66,15 +67,15 @@ def make_plot(methods, labels_out, colors, name=None):
 
         # Calculate the low and high at each time step, setting to 1 or 0 for max / min
         for j in range(len(y)):
-            y_min = y[j] - dev[j]
-            if y_min < 0:
-                y_min = 0
+            y_min = y[j] - (dev[j]/10)
+            #if y_min < 0:
+            #    y_min = 0
 
             y_low.append(y_min)
-            y_max = y[j] + dev[j]
+            y_max = y[j] + (dev[j]/10)
 
-            if y_max > 1:
-                y_max = 1
+            #if y_max > 1:
+            #    y_max = 1
 
             y_high.append(y_max)
 
@@ -83,10 +84,12 @@ def make_plot(methods, labels_out, colors, name=None):
         plt.fill_between(counter, y_low, y_high, color=colors[k], alpha=.1)
 
     plt.legend(loc="lower right")
-    plt.title("Average and Standard Deviation for Percent of Explored Area")
+    #plt.title("Average and Standard Deviation for Percent of Explored Area")
     plt.xlabel("Time Steps")
-    plt.ylabel("Percent of Explored Area")
-
+    plt.ylabel("Normalised Area Explored (%)")
+    plt.xlim(0,300)
+    plt.yticks(np.arange(60, 110, step=10))
+    #ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1f'))
     # If no file name was passed, show the plot. Otherwise, save as that file name
     if not name:
         plt.show()

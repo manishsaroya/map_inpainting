@@ -2,6 +2,7 @@ import numpy as np
 import csv
 from numpy import concatenate
 import pdb
+import copy
 content = []
 elements = 4
 
@@ -35,6 +36,9 @@ for i in content:
 
 	for j in range(len(i)):
 		values[j%elements].append(i[j])
+	divisor = copy.deepcopy(values[0])
+	for k in range(elements):
+		values[k] = (np.array(values[k]) / divisor) *100
 	
 	#Compute mean and std_dev
 	for v in range(len(values)):

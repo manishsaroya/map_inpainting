@@ -2,4 +2,6 @@ MEAN = [0.485, 0.456, 0.406]
 STD = [0.229, 0.224, 0.225]
 
 LAMBDA_DICT = {
-    'valid': 150.0, 'hole': 10.5, 'tv': 2, 'prc': 0.05, 'style': 120.0} #'toploss': 0.0
+    'valid': 150.0, 'hole': 10.5, 'tv': 0.0, 'prc': 0.0, 'style': 0.0} 
+#LAMBDA_DICT = {
+#    'valid': 150.0, 'hole': 10.5, 'tv': 2, 'prc': 0.05, 'style': 120.0} #'toploss': 0.0

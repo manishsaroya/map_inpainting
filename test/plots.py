@@ -3,6 +3,7 @@ import numpy as np
 import csv
 import pdb
 import matplotlib.ticker as ticker
+import math
 # Lists hold the mean and standard deviations for each time step for the five functions
 value = []
 quarter = []
@@ -32,23 +33,28 @@ colors_long = ['darkorange', 'deepskyblue', 'b', 'g', 'mediumorchid']
 # labels_out_short = ['Toploss', 'without top loss']
 # colors_short = ['darkorange', 'deepskyblue']
 
-methods_short = [quarter, closest,  sqrt, normal]
-labels_in_short = ['Quarter','Closest', 'Square_root', 'Normal']
-labels_out_short = ['Oracle', 'Closest first', 'Without topological loss', 'Topological loss']
-colors_short = ['darkorange', 'deepskyblue', 'b', 'g']
+methods_short = [quarter, closest,  sqrt, normal, value]
+labels_in_short = ['Quarter','Closest', 'Square_root', 'Normal', 'Value']
+labels_out_short = ['Oracle', 'Closest first', 'Without topological loss', 'Topological loss', 'pixel-wise loss only']
+colors_short = ['darkorange', 'deepskyblue', 'b', 'g','mediumorchid']
 
-with open('formatted_without_toploss_long_gaussian_24recursive.csv') as file:
+methods_short = [quarter, normal,sqrt, value, closest]
+labels_in_short = ['Quarter','Normal','Square_root','Value','Closest']
+labels_out_short = ['Oracle','Topological loss','Without topological loss', 'Pixel-wise loss only','Closest first']
+colors_short = ['darkorange', 'g','b','deepskyblue','mediumorchid']
+
+with open('formatted_long_gaussian_24recursive.csv') as file:
 
     readCSV = csv.reader(file, delimiter=',')
     for row in readCSV:
         for i in range(len(methods_long)):
             if row[0] == labels_in_long[i]:
-                methods_long[i].append(row[27:])
+                methods_long[i].append(row[25:])
 
 
 def make_plot(methods, labels_out, colors, name=None):
     # Counter provides x-labels
-    counter = range(474)
+    counter = range(676)
     #fig, ax = plt.subplots(figsize=(7,7))
     plt.figure(figsize=(5,4))
     # For each method
@@ -67,12 +73,12 @@ def make_plot(methods, labels_out, colors, name=None):
 
         # Calculate the low and high at each time step, setting to 1 or 0 for max / min
         for j in range(len(y)):
-            y_min = y[j] - (dev[j]/10)
+            y_min = y[j] - (dev[j]/math.sqrt(99))
             #if y_min < 0:
             #    y_min = 0
 
             y_low.append(y_min)
-            y_max = y[j] + (dev[j]/10)
+            y_max = y[j] + (dev[j]/math.sqrt(99))
 
             #if y_max > 1:
             #    y_max = 1
@@ -87,7 +93,7 @@ def make_plot(methods, labels_out, colors, name=None):
     #plt.title("Average and Standard Deviation for Percent of Explored Area")
     plt.xlabel("Time Steps")
     plt.ylabel("Normalised Area Explored (%)")
-    plt.xlim(0,300)
+    plt.xlim(0,250)
     plt.yticks(np.arange(60, 110, step=10))
     #ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1f'))
     # If no file name was passed, show the plot. Otherwise, save as that file name
@@ -98,5 +104,5 @@ def make_plot(methods, labels_out, colors, name=None):
 
 
 if __name__ == "__main__":
-    make_plot(methods_short, labels_out_short, colors_short, 'Percent_without_toploss_long_gaussian_24.png')
+    make_plot(methods_short, labels_out_short, colors_short, 'Percent_long_gaussian_24.png')
     #make_plot(methods_long, labels_out_long, colors_long, 'Percent_found_all.png')

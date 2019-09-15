@@ -57,7 +57,7 @@ class Frontier:
                 #print("current position", current)
                 #print("x,y of frontier:", frontier_indices[0,i], frontier_indices[1,i])
                 #frontier_values.append(100 - (path_length - 1))
-                frontier_values.append((frontiers[frontier_indices[0, i]][frontier_indices[1, i]]+0.5) / (path_length-1))
+                frontier_values.append((frontiers[frontier_indices[0, i]][frontier_indices[1, i]]+0.5) / (path_length-1)) # 1 when robot- frontier dist not in frontiers, otherwise 0.5
                 #closest_frontier_value.append(100 - (path_length - 1))
                 # print("Scaled frontier:", frontiers[frontier_indices[0, i]][frontier_indices[1, i]] / (path_length-1))
             elif value_dist == 'sqrt':
@@ -65,7 +65,7 @@ class Frontier:
                 frontier_values.append((frontiers[frontier_indices[0, i]][frontier_indices[1, i]]+0.5) / (path_length-1))
             elif value_dist == 'value':
                 #fronts.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
-                frontier_values.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
+                frontier_values.append((frontiers[frontier_indices[0, i]][frontier_indices[1, i]]+0.5) / (path_length-1))
             elif value_dist == 'quarter':
                 #fronts.append(frontiers[frontier_indices[0, i]][frontier_indices[1, i]])
                 frontier_values.append((frontiers[frontier_indices[0, i]][frontier_indices[1, i]]+0.5) / (path_length-1)) # TODO: change back to 1/4

@@ -4,7 +4,7 @@ from numpy import concatenate
 import pdb
 import copy
 content = []
-elements = 4
+elements = 5
 
 ##### Order same as experiment.py #################
 #explore_type = ['Value', 'Quarter', 'Closest', 'Square_root','Normal']
@@ -12,9 +12,9 @@ elements = 4
 #explore_type = ['Quarter','Closest', 'Normal']
 #explore_type = ['Quarter']
 #explore_type = ['Normal', 'Square_root']
-explore_type = ['Quarter', 'Closest', 'Square_root', 'Normal']
+explore_type = ['Quarter', 'Closest', 'Square_root', 'Normal', 'Value']
 
-with open('without_toploss_gaussian24.csv') as file:
+with open('test_long_gaussian24.csv') as file:
 	readCSV = csv.reader(file, delimiter=',')
 	print(readCSV)
 	for row in readCSV:
@@ -38,7 +38,10 @@ for i in content:
 		values[j%elements].append(i[j])
 	divisor = copy.deepcopy(values[0])
 	for k in range(elements):
-		values[k] = (np.array(values[k]) / divisor) *100
+		try:
+			values[k] = (np.array(values[k]) / divisor) *100
+		except ValueError:
+			pdb.set_trace()
 	
 	#Compute mean and std_dev
 	for v in range(len(values)):
@@ -46,7 +49,7 @@ for i in content:
 		std_list[v].append(np.std(values[v]))
 
 
-with open('formatted_without_toploss_long_gaussian_24recursive.csv', mode='w') as file:
+with open('formatted_long_gaussian_24recursive.csv', mode='w') as file:
 	format_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	for x in range(len(mean_list)):
 		to_write = concatenate([[explore_type[x]],['Mean'], mean_list[x]])

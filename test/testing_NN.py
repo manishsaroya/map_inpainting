@@ -15,7 +15,7 @@ from robot import Robot
 from frontier2 import Frontier
 import numpy as np
 import pdb
-
+import pickle
 
 GRID_SIZE = 32
 
@@ -41,7 +41,7 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 	x_dim, y_dim = tunnel._x_dim, tunnel._y_dim
 
 	steps = 0
-	budget = 500
+	budget = 700
 
 	# Store value at the start because it changes over time
 	num_artifacts = len(tunnel._updated_artifact_locations)
@@ -82,17 +82,26 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 			# print("predicted artifacts\t:{}".format(len(tunnel._updated_predicted_artifact_locations)))
 			
 			# Recursive Prediction
-			if value_dist=='normal' or value_dist=='quarter' or value_dist=="sqrt": 
+			if value_dist=='normal' or value_dist=='quarter' or value_dist=="sqrt" or value_dist=="value": 
 				nth_prediction = 0 #int(steps/10)
 				tunnel._recursive_predict(wall_e._observation_indicator, wall_e._frontiers_indicator, state, value_dist, nth_prediction=nth_prediction)
 				wall_e._recursive_prediction_update(tunnel._get_predicted_artifact_fidelity_map())
 
+			predicted_artifacts = np.zeros_like(tunnel._tunnel_map)
+			for p in tunnel._get_predicted_artifact_locations():
+				predicted_artifacts[p[1],p[0]] = 1 # Note the transpose action
+			
 			if visualize:
 				# Update visualization
-				predicted_artifacts = np.zeros_like(tunnel._tunnel_map)
-				for p in tunnel._get_predicted_artifact_locations():
-					predicted_artifacts[p[1],p[0]] = 1 # Note the transpose action
-				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator)
+				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator, steps, value_dist)
+
+			data = [TUNNEL_FILE, state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator]
+			if value_dist=="closest":
+				with open('./case_53_closest/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+					pickle.dump(data, handle)
+			elif value_dist=="normal":
+				with open('./case_53_normal/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+					pickle.dump(data, handle)
 
 			# Pick the next frontier and get a path to that point
 			path = frontier.get_next_frontier(state, wall_e._observation_indicator, tunnel._get_predicted_artifact_fidelity_map(), wall_e._frontiers_indicator, value_dist)
@@ -124,13 +133,25 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 					# Normalizes to be percent of total artifacts found
 					score_list[steps - 1] = len(points_found) / num_artifacts
+					
+					predicted_artifacts = np.zeros_like(tunnel._tunnel_map)
+					for p in tunnel._get_predicted_artifact_locations():
+						predicted_artifacts[p[1],p[0]] = 1 # Note the transpose action
 
 					if visualize:
 						predicted_artifacts = np.zeros_like(tunnel._tunnel_map)
 						for p in tunnel._get_predicted_artifact_locations():
 							predicted_artifacts[p[1],p[0]] = 1 # Note the transpose action
 						graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation,
-												wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator)
+												wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator, steps, value_dist)
+
+					data = [TUNNEL_FILE, state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator]
+					if value_dist=="closest":
+						with open('./case_53_closest/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+							pickle.dump(data, handle)
+					elif value_dist=="normal":
+						with open('./case_53_normal/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+							pickle.dump(data, handle)
 					# Update the distance to the next point
 					distance = abs(wall_e._get_current_location()[0] - point[0]) + abs(wall_e._get_current_location()[1] - point[1])
 

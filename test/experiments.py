@@ -69,22 +69,22 @@ if __name__ == "__main__":
     num_tunnel_files = 100
     #value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
     #value_distance = ['quarter','closest', 'normal']
-    value_distance = ['quarter','closest','sqrt','normal']    # sqrt== without toploss network, normal= toploss network prediction, quarter== ground truth prediction
-    #value_distance = ['quarter']
+    #value_distance = ['quarter','closest','sqrt','normal', 'value'] #value ==pixel-wise, sqrt== without toploss network, normal= toploss network prediction, quarter== ground truth prediction
+    value_distance = ['normal']
     visualize = False
     true_prediction, ground_truth = get_prediction_and_ground_truth(grid_size)
     network_input = test_dataset(grid_size)
 
     try:
         print('Started exploring\n')
-        with open('without_toploss_gaussian{}.csv'.format(grid_size), mode='w') as experiments:
+        with open('case_map_53_gaussian{}.csv'.format(grid_size), mode='w') as experiments:
             experiment_writer = csv.writer(experiments, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            for i in range(0, num_tunnel_files):
+            for i in range(73, 74):#num_tunnel_files):
                 # print('')
                 print("##################")
                 print("Tunnel {}".format(i))
                 #if i not in [0, 1, 7, 9, 10, 14, 16, 17]:
-                if i==900:
+                if i==74:
                     print("skipping tunnel")
                 else:
                     tunnel_file = ground_truth[i] #'./maps_{}/tunnel_{}.npy'.format(grid_size, i)

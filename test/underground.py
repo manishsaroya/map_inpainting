@@ -145,6 +145,8 @@ class Underground:
 		#pdb.set_trace()
 		if value_dist=="normal":
 			load_ckpt('../snapshots/gaussian/ckpt/1000000.pth', [('model', model)])
+		elif value_dist=="value":
+			load_ckpt('../snapshots/pixel_wise/ckpt/1000000.pth', [('model', model)])
 		else:
 			load_ckpt('../snapshots/plain/ckpt/1000000.pth', [('model', model)])
 		model.eval()

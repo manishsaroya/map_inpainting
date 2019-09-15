@@ -11,6 +11,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
 import pdb
+import pickle
 
 
 class Visualize:
@@ -37,7 +38,13 @@ class Visualize:
 		else:
 			return self._tunnel_map[state[1]][state[0]]
 
-	def _keep_visualizing(self, robot_states, updated_artifact_locations, current_observation, explored_map, fidelity_map,frontiers_indicator):
+	def _keep_visualizing(self, robot_states, updated_artifact_locations, current_observation, explored_map, fidelity_map,frontiers_indicator, steps, value_dist):
+		############# Dump some data to pickle ###############
+		# data = [self._tunnel_map, robot_states, updated_artifact_locations, current_observation, explored_map, fidelity_map,frontiers_indicator, steps]
+		# with open('./case_53/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+		# 	pickle.dump(data, handle)
+
+
 		# TODO: Adapt for multiple robots
 		self._artifact_locations = updated_artifact_locations
 		self.ax.cla()

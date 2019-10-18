@@ -77,9 +77,9 @@ if __name__ == "__main__":
 
     try:
         print('Started exploring\n')
-        with open('case_map_53_gaussian{}.csv'.format(grid_size), mode='w') as experiments:
+        with open('case_map_4_gaussian{}.csv'.format(grid_size), mode='w') as experiments:
             experiment_writer = csv.writer(experiments, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            for i in range(73, 74):#num_tunnel_files):
+            for i in range(2, 3):#num_tunnel_files):
                 # print('')
                 print("##################")
                 print("Tunnel {}".format(i))

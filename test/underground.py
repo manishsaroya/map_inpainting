@@ -13,18 +13,75 @@ from torchvision import transforms
 import numpy 
 import sys 
 import matplotlib.pyplot as plt
+from matplotlib import font_manager
 import a_star
 #print(sys.path)
 sys.path.append('../')
 sys.path.append("../synthetic_data/")
 from mask_generation import Mask
-
+from topological_loss import PersistenceDgm 
 #from neural_network.artifact_prediction_cuda import Net
 from net import PConvUNet
 import opt
 from util.io import load_ckpt, get_state_dict_on_cpu
 import copy
 import pdb
+import time
+import os
+
+def savepersistence(n, beta_t, ground_t):
+    t = time.time()
+    #plt.tight_layout()
+    ########### save persistence Diagram #######
+    plt.style.use('default')
+    outplot = PersistenceDgm((n,n))
+    _max = (beta_t).max()
+    _min = (beta_t).min()
+    #pdb.set_trace()
+    alpha = (beta_t / (_max- _min)) - (_min/(_max-_min))
+    z, f = outplot.dgmplot(alpha)
+    #plt.style.use("")
+    fig, ax = plt.subplots(figsize=(2.5,2.5))
+    ax.set(xlim=(0, 1), ylim=(0, 1))
+    x = numpy.linspace(0, 1, 1000)
+    ax.plot(x, x, color="k")
+    if len(z)>0:
+        ax.plot(z[:,1], z[:,0],'bx', label="0-dim")
+    if len(f)>0:
+        ax.plot(f[:,1], f[:,0],'ro', label="1-dim")
+    ax.legend(loc="lower right")
+    ax.set_yticks(numpy.arange(0, 2, step=1))
+    ax.set_xticks(numpy.arange(0, 2, step=1))
+    #ax[1].set_title("output PersistenceDgm")
+    ax.set_xlabel('Birth')
+    ax.set_ylabel('Death')
+    ax.xaxis.labelpad=-9
+    ax.yaxis.labelpad=-9
+    if not os.path.exists("./persistence_new"):
+    	os.makedirs("./persistence_new")
+    plt.savefig('./persistence_new/'+str(t)+'persistence_dgm.png')
+    
+    fig, ax = plt.subplots(figsize=(2.5,2.5))
+    plt.style.use('seaborn-dark')
+    fig.colorbar(ax.imshow(alpha), ticks=[0,1],fraction=0.047, pad=0.02)#, cmap=plt.get_cmap('gray'))
+    ax.set_yticks([])
+    ax.set_xticks([])
+    text = ax.yaxis.label
+    font = font_manager.FontProperties(family='serif')
+    text.set_font_properties(font)
+    ax.invert_yaxis()
+    #inplot = PersistenceDgm((n,n))
+    #z, f = inplot.dgmplot(ground_t)
+    #ax[0].set(xlim=(-1.1, 1.1), ylim=(-1.1, 1.1))
+    #if len(z)>0:
+    #    ax[0].plot(z[:,0], z[:,1],'bo')
+    #if len(f)>0:
+    #    ax[0].plot(f[:,0], f[:,1],'ro')
+    #ax[0].set_title("Ground Truth PersistenceDgm")
+    
+    #ax.colorbar()
+    plt.savefig('./persistence_new/'+str(t)+'output.png')
+    #pdb.set_trace()
 
 class Underground:
 
@@ -117,7 +174,7 @@ class Underground:
 	    gt = gt[0][0]
 	    mask = mask[0][0]
 	    output = output[0][0]
-
+	    savepersistence(24, output, gt)
 	    a = 1.0/(1.0 + numpy.exp(-output.numpy()))
 	    prediction = (a * abs(mask.numpy() - 1))
 	    

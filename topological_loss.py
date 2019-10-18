@@ -6,7 +6,7 @@ import pdb
 def reduceinfo(info):
     r = []
     for i in info:
-        if abs(i[0]) != np.inf and abs(i[1])!= np.inf and i[0]!=i[1]:
+        if abs(i[0]) != np.inf and abs(i[1])!= np.inf and abs(i[0]-i[1])>0.1: #i[0]!=i[1]:
             r.append(i.detach().numpy())
     return r
 

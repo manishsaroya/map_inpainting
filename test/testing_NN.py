@@ -97,10 +97,10 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 
 			data = [TUNNEL_FILE, state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator]
 			if value_dist=="closest":
-				with open('./case_53_closest/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+				with open('./case_4_closest/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
 					pickle.dump(data, handle)
 			elif value_dist=="normal":
-				with open('./case_53_normal/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+				with open('./case_4_normal/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
 					pickle.dump(data, handle)
 
 			# Pick the next frontier and get a path to that point

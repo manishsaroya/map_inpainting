@@ -17,7 +17,7 @@ rcParams['legend.handleheight'] = 2
 steps = 22
 value_dist = "normal"
 #data = [tunnel_map, robot_states, updated_artifact_locations, current_observation, explored_map, fidelity_map,frontiers_indicator]
-with open('./case_53_{:s}/step_{:d}_{:s}.pickle'.format(value_dist, steps, value_dist),'rb') as tf:
+with open('../../Desktop/case_53_{:s}/step_{:d}_{:s}.pickle'.format(value_dist, steps, value_dist),'rb') as tf:
 		data = pickle.load(tf)
 
 #pdb.set_trace()
@@ -47,10 +47,10 @@ ax.imshow(explored_map)#tunnel_map)#, cmap=plt.get_cmap('gist_gray'))
 plt.ion()
 #plt.show(fig)
 
-with open('./case_53_{:s}/step_{:d}_{:s}.pickle'.format(value_dist, steps, value_dist),'rb') as tf:
+with open('../../Desktop/case_53_{:s}/step_{:d}_{:s}.pickle'.format(value_dist, steps, value_dist),'rb') as tf:
 	data = pickle.load(tf)
 
-tunnel_map, robot_states, updated_artifact_locations, current_observation, explored_map, fidelity_map,frontiers_indicator = data
+tunnel_map, robot_states, updated_artifact_locations, current_observation, explored_map, fidelity_map,frontiers_indicator = data   #fidelity map should be transposed
 _artifact_locations = updated_artifact_locations
 ax.cla()
 ax.imshow(np.transpose(explored_map))#tunnel_map) #cmap=plt.get_cmap('gist_gray'))
@@ -113,13 +113,14 @@ for f in frontierVector:
 
 mask = Mask()
 mask.set_map(explored_map, frontierVector)
+#mask.set_map(np.logical_or(explored_map, frontiers_indicator) * 1.0, frontierVector)
 masking = mask.get_mask()
 final_mask = np.float32(mask.get_adaptive_mask(masking))
 mask_indices = np.nonzero(abs(final_mask - 1))
 maskVector = []
 for i in range(len(mask_indices[0])):
 	maskVector.append([mask_indices[0][i], mask_indices[1][i]])
-
+#pdb.set_trace()
 ##################### Plot mask ########
 for m in maskVector:
 	rect = patches.Rectangle((m[0] - 0.5, m[1] - 0.5), 1, 1, linewidth=0.0001, edgecolor='lightgoldenrodyellow', hatch='', facecolor='lightgoldenrodyellow')

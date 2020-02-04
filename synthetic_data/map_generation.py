@@ -14,15 +14,17 @@ import numpy as np
 from x_map_gen import Exploration
 from mask_generation import Mask
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
+import matplotlib.patches as patches
 import os
 import pdb
 ######## Parameters for generating the database #############
 GRID_SIZE = 24
-numPOI = 14
-trainRatio = 0
-totalData = 100
-validRatio = 0
-testRatio = 1
+numPOI = 1
+trainRatio = 0.8
+totalData = 10
+validRatio = 0.1
+testRatio = 0.1
 #############################################################
 
 ######### Exploration Parameters #############
@@ -153,4 +155,85 @@ plt.title("explored with forntiers")
 plt.ylabel('explored_y')
 plt.xlabel('explored_x')
 plt.show()
+plt.pause(0.001)
 #plt.savefig("sample_map.png")
+
+
+# Awesome plotter
+tunnel_map, updated_artifact_locations, explored_map, frontiers_indicator = groundTruthData['train'][0], \
+	groundTruthData['train'][0] - tunnelMapData['train'][0], tunnelMapData['train'][0], frontierVectorData['train'][0]
+######### Class constructor 
+_y_dim, _x_dim = tunnel_map.shape
+fig, ax = plt.subplots()
+fig.set_size_inches(10,10)
+fig.canvas.set_window_title("Sub-T Simulator")
+
+#### INIT ##########
+plt.style.use('seaborn-dark')
+plt.tight_layout()
+ax.imshow(tunnel_map)#, cmap=plt.get_cmap('gist_gray'))
+plt.ion()
+#plt.show(fig)
+
+#with open('./case_53_{:s}/step_{:d}_{:s}.pickle'.format(value_dist, steps, value_dist),'rb') as tf:
+#	data = pickle.load(tf)
+
+
+#_artifact_locations = updated_artifact_locations
+ax.cla()
+ax.imshow(tunnel_map) #cmap=plt.get_cmap('gist_gray'))
+
+#plt.imshow(frontier_indicator-0.5)
+#plt.pause(0.0001)
+
+# robot start location
+rect = patches.Rectangle((12 - 0.5, 0 - 0.5), 1, 1, linewidth=2, edgecolor='darkorange', hatch="", facecolor='red')
+ax.add_patch(rect)
+
+
+# Plot artifact locations
+artifact_indices = np.nonzero(updated_artifact_locations)
+artifactVector = []
+
+for i in range(len(artifact_indices[0])):
+	artifactVector.append([artifact_indices[0][i], artifact_indices[1][i]])
+for artifact in artifactVector:
+	rect = patches.Rectangle((artifact[1] - 0.5, artifact[0] - 0.5), 1, 1, linewidth=1.5, linestyle='--', joinstyle='round', edgecolor='black', hatch='', facecolor='white')
+	#rect = patches.Patch((artifact[0] - 0.5, artifact[1] - 0.5), linewidth=0.001, edgecolor='y', hatch='/', facecolor='none')
+	ax.add_patch(rect)
+
+
+# Plot frontier locations
+# f_indices = np.nonzero(frontiers_indicator)
+# frontierVector = []
+# for i in range(len(f_indices[0])):
+# 	frontierVector.append([f_indices[0][i], f_indices[1][i]])
+for f in frontiers_indicator: # frontierVector:
+	rect = patches.Rectangle((f[1] - 0.5, f[0] - 0.5), 1, 1, linewidth=2, edgecolor='mediumorchid', hatch='*', facecolor='Orange')
+	ax.add_patch(rect)
+#pdb.set_trace()
+
+plt.xticks([])
+plt.yticks([])
+
+
+#ax.invert_yaxis()
+plt.savefig("partially_explored.eps")
+plt.show(fig)
+pdb.set_trace()
+
+# Plot explored map
+for y in range(_y_dim):
+	for x in range(_x_dim):
+		if explored_map[x][y]:
+			rect = patches.Circle((x, y), 0.1, linewidth=1, edgecolor='b', facecolor='b')
+			ax.add_patch(rect)
+
+ax.plot()
+# self.ax.tick_params(axis='both', which='both', bottom=False, top=False, labelbottom=False, right=False, left=False, labelleft=False)
+plt.draw()
+
+plt.show(fig)
+#plt.pause(.001)
+print(b)
+#pdb.set_trace()

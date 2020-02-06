@@ -69,7 +69,7 @@ class Mask:
 
 	def get_adaptive_mask(self, predict_falsemask):
 		predict_truemask = np.zeros((len(self.exploredMap),len(self.exploredMap[0])))
-		depth = int(self.exploredMap.shape[0]/3) -1
+		depth = int(self.exploredMap.shape[0]/3) 
 		#depth = 2
 		# for f in self.frontierVector:
 		# 	latentPoints = []

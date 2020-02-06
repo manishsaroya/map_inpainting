@@ -34,10 +34,10 @@ class Exploration:
 		    lambda x, y: (x, y - 1),  # left
 		    lambda x, y: (x, y + 1),  # right
 		    # adding diagonal nbrs
-		    lambda x, y: (x+1, y+1), # down-right 
-		    lambda x, y: (x+1, y-1), # down-left
-		    lambda x, y: (x-1, y+1), # up-right
-		    lambda x, y: (x-1, y-1), # up-left
+		    # lambda x, y: (x+1, y+1), # down-right 
+		    # lambda x, y: (x+1, y-1), # down-left
+		    # lambda x, y: (x-1, y+1), # up-right
+		    # lambda x, y: (x-1, y-1), # up-left
 		]
 		frontierVector = []
 		for d in dirs_motion:

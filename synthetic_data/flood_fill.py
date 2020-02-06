@@ -87,7 +87,7 @@ def createPOI(numPoints, dimension):
     print(pts)
 
     for point in pts:
-        x = np.arange(-24, 25)
+        x = np.arange(-dimension[0], dimension[0]+1)
         xU, xL = x + 0.5, x - 0.5 
         prob = ss.norm.cdf(xU, scale = 5) - ss.norm.cdf(xL, scale = 5)
         prob = prob / prob.sum() #normalize the probabilities so their sum is 1

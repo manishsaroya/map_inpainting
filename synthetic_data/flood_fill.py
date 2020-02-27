@@ -84,7 +84,7 @@ def createPOI(numPoints, dimension):
         if point not in pts:
             pts.append(point)
 
-    print(pts)
+    #print(pts)
 
     for point in pts:
         x = np.arange(-dimension[0], dimension[0]+1)

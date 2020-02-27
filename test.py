@@ -14,10 +14,10 @@ parser = argparse.ArgumentParser()
 # training options
 parser.add_argument('--root', type=str, default='./data')
 #parser.add_argument('--snapshot', type=str, default='snapshots/adaptivelongsize32/ckpt/995000.pth')
-parser.add_argument('--snapshot', type=str, default='snapshots/toploss24variable/ckpt/500000.pth')
+parser.add_argument('--snapshot', type=str, default='snapshots/posticra_long/ckpt/1000000.pth')
 #parser.add_argument('--snapshot', type=str, default='/home/subt/Desktop/Important_top_trained_network/500000.pth')
 parser.add_argument('--image_size', type=int, default=24)
-parser.add_argument('--output_dir',type=str, default='snapshots/toploss24variable/output/')
+parser.add_argument('--output_dir',type=str, default='snapshots/posticra_long/output/')
 args = parser.parse_args()
 
 if not os.path.exists(args.output_dir):

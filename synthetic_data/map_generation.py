@@ -22,7 +22,7 @@ import pdb
 GRID_SIZE = 24
 numPOI = 5
 trainRatio = 0.8
-totalData = 30
+totalData = 40000
 validRatio = 0.1
 testRatio = 0.1
 #############################################################

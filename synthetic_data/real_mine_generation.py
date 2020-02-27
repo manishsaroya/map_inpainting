@@ -29,8 +29,8 @@ testRatio = 1
 
 ######### Exploration Parameters #############
 #filterRatio = 0.7
-data_dir = "./mine_data"
-read_data = ['edgar.txt', 'bruceton.txt']
+data_dir = "./mine_data_chilean_brunton2"
+read_data = ['chilean.txt', 'bruceton2.txt']
 ##############################################
 
 if not os.path.exists(data_dir):

@@ -9,12 +9,12 @@ elements = 5
 ##### Order same as experiment.py #################
 #explore_type = ['Value', 'Quarter', 'Closest', 'Square_root','Normal']
 # keep the same order as experiment.py
-#explore_type = ['Quarter','Closest', 'Normal']
+#explore_type = ['Quater','Closest','Normal']
 #explore_type = ['Quarter']
 #explore_type = ['Normal', 'Square_root']
 explore_type = ['Quarter', 'Closest', 'Square_root', 'Normal', 'Value']
 
-with open('test_long_gaussian24.csv') as file:
+with open('alpha.csv') as file:
 	readCSV = csv.reader(file, delimiter=',')
 	print(readCSV)
 	for row in readCSV:
@@ -36,7 +36,7 @@ for i in content:
 
 	for j in range(len(i)):
 		values[j%elements].append(i[j])
-	divisor = copy.deepcopy(values[0])
+	divisor = copy.deepcopy(values[0])      # IMPORTANT PARAMETER Values[0] corresponds to Quater -> ground truth
 	for k in range(elements):
 		try:
 			values[k] = (np.array(values[k]) / divisor) *100
@@ -49,7 +49,7 @@ for i in content:
 		std_list[v].append(np.std(values[v]))
 
 
-with open('formatted_long_gaussian_24recursive.csv', mode='w') as file:
+with open('formatted_alpha.csv', mode='w') as file:
 	format_writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	for x in range(len(mean_list)):
 		to_write = concatenate([[explore_type[x]],['Mean'], mean_list[x]])

@@ -17,7 +17,7 @@ import numpy as np
 import pdb
 import pickle
 
-GRID_SIZE = 32
+GRID_SIZE = 24
 
 def shutdown():
 	print('\nGoodbye')
@@ -96,12 +96,12 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 				graph._keep_visualizing(state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator, steps, value_dist)
 
 			data = [TUNNEL_FILE, state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator]
-			if value_dist=="closest":
-				with open('./case_4_closest/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
-					pickle.dump(data, handle)
-			elif value_dist=="normal":
-				with open('./case_4_normal/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
-					pickle.dump(data, handle)
+			# if value_dist=="closest":
+			# 	with open('./case_latest_closest/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+			# 		pickle.dump(data, handle)
+			# elif value_dist=="normal":
+			# 	with open('./case_latest_normal/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+			# 		pickle.dump(data, handle)
 
 			# Pick the next frontier and get a path to that point
 			path = frontier.get_next_frontier(state, wall_e._observation_indicator, tunnel._get_predicted_artifact_fidelity_map(), wall_e._frontiers_indicator, value_dist)
@@ -146,12 +146,12 @@ def main(value_dist, TUNNEL_FILE, ARTIFACT_FILE, neural_input, visualize=True):
 												wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator, steps, value_dist)
 
 					data = [TUNNEL_FILE, state, tunnel._get_artifact_locations(), observation, wall_e._get_explored_map(), predicted_artifacts, wall_e._frontiers_indicator]
-					if value_dist=="closest":
-						with open('./case_53_closest/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
-							pickle.dump(data, handle)
-					elif value_dist=="normal":
-						with open('./case_53_normal/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
-							pickle.dump(data, handle)
+					# if value_dist=="closest":
+					# 	with open('./case_latest_closest/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+					# 		pickle.dump(data, handle)
+					# elif value_dist=="normal":
+					# 	with open('./case_latest_normal/step_{:d}_{:s}.pickle'.format(steps, value_dist), 'wb') as handle:
+					# 		pickle.dump(data, handle)
 					# Update the distance to the next point
 					distance = abs(wall_e._get_current_location()[0] - point[0]) + abs(wall_e._get_current_location()[1] - point[1])
 

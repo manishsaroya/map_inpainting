@@ -10,9 +10,11 @@ import numpy as np
 import time
 import copy
 import pdb
-
+import sys
+sys.path.append("../synthetic_data/")
 data_dir = "./for_test_gaussian"
-#data_dir = "../synthetic_data/variable"
+#data_dir = "../synthetic_data/mine_data"
+#data_dir = "../synthetic_data/mine_data_chilean_brunton2"
 
 def shutdown():
     print('\nGoodbye')
@@ -69,43 +71,44 @@ if __name__ == "__main__":
     num_tunnel_files = 100
     #value_distance = ['value', 'quarter', 'closest', 'sqrt', 'normal']
     #value_distance = ['quarter','closest', 'normal']
-    #value_distance = ['quarter','closest','sqrt','normal', 'value'] #value ==pixel-wise, sqrt== without toploss network, normal= toploss network prediction, quarter== ground truth prediction
-    value_distance = ['normal']
+    value_distance = ['quarter','closest','sqrt','normal', 'value'] #value ==pixel-wise, sqrt== without toploss network, normal= toploss network prediction, quarter== ground truth prediction
+    #value_distance = ['normal'] #, 'closest']
     visualize = False
     true_prediction, ground_truth = get_prediction_and_ground_truth(grid_size)
     network_input = test_dataset(grid_size)
 
     try:
         print('Started exploring\n')
-        with open('case_map_4_gaussian{}.csv'.format(grid_size), mode='w') as experiments:
+        with open('postcon_shortsimtest_same_as_real_test{}.csv'.format(grid_size), mode='w') as experiments:
             experiment_writer = csv.writer(experiments, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            for i in range(2, 3):#num_tunnel_files):
-                # print('')
-                print("##################")
-                print("Tunnel {}".format(i))
-                #if i not in [0, 1, 7, 9, 10, 14, 16, 17]:
-                if i==74:
-                    print("skipping tunnel")
-                else:
-                    tunnel_file = ground_truth[i] #'./maps_{}/tunnel_{}.npy'.format(grid_size, i)
-                    artifact_file = []
-                    for x in range(len(true_prediction[i])):
-                        for y in range(len(true_prediction[i][0])):
-                            if true_prediction[i][x][y] ==1:
-                                artifact_file.append([x,y])
-                    #artifact_file = list(true_prediction[i]) #'./maps_{}/artifacts_{}.npy'.format(grid_size, i)
-                    artifact_file = np.array(artifact_file)
-                    #print(artifact_file)
-                    time.sleep(0.001) 
-                    for e in value_distance:
-                        print("Value", e)
-                        #pdb.set_trace()
-                        steps, reward, score_list, points_found = testing_NN.main(e, tunnel_file, artifact_file, copy.deepcopy(network_input[i]), visualize)
-                        # print("Steps", steps)
-                        # print("Reward", reward)
-                        # print("POIs found", len(points_found))
-                        to_write = concatenate([['tunnel_{}'.format(i)], ['method_{}'.format(e)], [steps], [reward], [sum(score_list)], score_list])
-                        experiment_writer.writerow(to_write)
+            for runs in range(1):
+                for i in range(0, num_tunnel_files):
+                    # print('')
+                    print("##################")
+                    print("Tunnel {}".format(i))
+                    #if i not in [0, 1, 7, 9, 10, 14, 16, 17]:
+                    if i==74:
+                        print("skipping tunnel")
+                    else:
+                        tunnel_file = ground_truth[i] #'./maps_{}/tunnel_{}.npy'.format(grid_size, i)
+                        artifact_file = []
+                        for x in range(len(true_prediction[i])):
+                            for y in range(len(true_prediction[i][0])):
+                                if true_prediction[i][x][y] ==1:
+                                    artifact_file.append([x,y])
+                        #artifact_file = list(true_prediction[i]) #'./maps_{}/artifacts_{}.npy'.format(grid_size, i)
+                        artifact_file = np.array(artifact_file)
+                        #print(artifact_file)
+                        time.sleep(0.001) 
+                        for e in value_distance:
+                            print("Value", e)
+                            #pdb.set_trace()
+                            steps, reward, score_list, points_found = testing_NN.main(e, tunnel_file, artifact_file, copy.deepcopy(network_input[i]), visualize)
+                            # print("Steps", steps)
+                            # print("Reward", reward)
+                            # print("POIs found", len(points_found))
+                            to_write = concatenate([['tunnel_{}'.format(i)], ['method_{}'.format(e)], [steps], [reward], [sum(score_list)], score_list])
+                            experiment_writer.writerow(to_write)
 
     except (KeyboardInterrupt, SystemExit):
         raise

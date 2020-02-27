@@ -174,7 +174,9 @@ class Underground:
 	    gt = gt[0][0]
 	    mask = mask[0][0]
 	    output = output[0][0]
-	    savepersistence(24, output, gt)
+
+	    ############ Commenting this as we dont want to save in 100 runs #########
+	    #savepersistence(24, output, gt)
 	    a = 1.0/(1.0 + numpy.exp(-output.numpy()))
 	    prediction = (a * abs(mask.numpy() - 1))
 	    
@@ -201,11 +203,11 @@ class Underground:
 		model = PConvUNet(layer_size=3, input_channels=1).to(device)
 		#pdb.set_trace()
 		if value_dist=="normal":
-			load_ckpt('../snapshots/gaussian/ckpt/1000000.pth', [('model', model)])
+			load_ckpt('../snapshots/posticra_long/ckpt/600000.pth', [('model', model)])
 		elif value_dist=="value":
-			load_ckpt('../snapshots/pixel_wise/ckpt/1000000.pth', [('model', model)])
+			load_ckpt('../snapshots/posticra_pixel_wise/ckpt/500000.pth', [('model', model)])
 		else:
-			load_ckpt('../snapshots/plain/ckpt/1000000.pth', [('model', model)])
+			load_ckpt('../snapshots/posticra_without_toploss/ckpt/500000.pth', [('model', model)])
 		model.eval()
 		# network output is just the prediction, does not include the input partial explored area. 
 		self.network_output = self.run_network(model, dataset_val, device,value_dist,if_save=False, nth_prediction=nth_prediction)

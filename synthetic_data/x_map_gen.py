@@ -18,7 +18,7 @@ class Exploration:
 		self.gridSize = gridSize
 		self.gridDimension = [self.gridSize, self.gridSize]
 		self.numPOI = numPOI
-		self.occupancy_map = None
+		self.occupancy_map = np.zeros(self.gridDimension)
 
 	def generate_map(self):
 		feature_map, self.occupancy_map = getTiles(self.gridDimension, self.numPOI)

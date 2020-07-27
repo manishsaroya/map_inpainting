@@ -1,7 +1,7 @@
 # Tunnel-Network-Exploration-with-CNN-based-World-Predictions
 **Note: I am in the process of cleaning up the code, should be done by the end of sept 2020. Contact me (saroyam@oregonstate.edu) if there is any problem with the code.**
 
-Robotic exploration requires adaptively selecting navigation goals that result in the rapid discovery and mapping of an unknown world. In many real-world environments, subtle structural cues can provide insight about the unexplored world, which may be exploited by a decision maker to improve the
+**Abstract-**Robotic exploration requires adaptively selecting navigation goals that result in the rapid discovery and mapping of an unknown world. In many real-world environments, subtle structural cues can provide insight about the unexplored world, which may be exploited by a decision maker to improve the
 speed of exploration. In sparse subterranean tunnel networks,
 these cues come in the form of topological features, such as
 loops or dead-ends, that are often common across similar envi-
@@ -29,8 +29,10 @@ Use synthetic data code to generate simulation data
 
 ### Preprocess 
 
+Generate simulation data
 ```
-python generate_data.py
+python synthetic_data/map_generation.py
+python synthetic_data/save_ground_persistence.py
 ```
 
 ### Train
@@ -43,8 +45,13 @@ python train.py
 //CUDA_VISIBLE_DEVICES=<gpu_id> python train.py --finetune --resume <checkpoint_name>
 //``` -->
 ### Test
+Network performance test
 ```
 python test.py
+```
+Evaluate Exploration
+```
+python test/experiments.py
 ```
 
 ## Results

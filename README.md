@@ -29,6 +29,10 @@ increase in the rate of area explored compared to techniques
 that do not attempt to predict and exploit topological features
 of the unexplored world.
 
+## Implementation Details
+This repository is developed over an ongoing re-implementation of [inpainting with partial-conv](https://github.com/naoto0804/pytorch-inpainting-with-partial-conv). 
+
+
 ## Requirements
 - Python 3.6+
 - Pytorch 0.4.1+
